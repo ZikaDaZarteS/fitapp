@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
+// import 'package:health/health.dart'; // Temporariamente comentado
 
 class SmartwatchIntegrationScreen extends StatefulWidget {
   const SmartwatchIntegrationScreen({super.key});
@@ -16,53 +16,56 @@ class _SmartwatchIntegrationScreenState
   double _heartRate = 0;
   bool _loading = false;
 
-  final HealthFactory _health = HealthFactory();
+  // Temporariamente comentado devido a problemas de compatibilidade
+  // final HealthFactory _health = HealthFactory();
 
   Future<void> _connect() async {
     setState(() => _loading = true);
-    final types = [HealthDataType.STEPS, HealthDataType.HEART_RATE];
-    final permissions = [HealthDataAccess.READ, HealthDataAccess.READ];
-    bool? authorized = await _health.requestAuthorization(
-      types,
-      permissions: permissions,
-    );
-    if (authorized == true) {
-      await _fetchData();
-    }
+    // Temporariamente comentado
+    // final types = [HealthDataType.STEPS, HealthDataType.HEART_RATE];
+    // final permissions = [HealthDataAccess.READ, HealthDataAccess.READ];
+    // bool? authorized = await _health.requestAuthorization(
+    //   types,
+    //   permissions: permissions,
+    // );
+    // if (authorized == true) {
+    //   await _fetchData();
+    // }
     setState(() {
-      _authorized = authorized;
+      _authorized = false; // Temporariamente false
       _loading = false;
     });
   }
 
   Future<void> _fetchData() async {
-    final now = DateTime.now();
-    final midnight = DateTime(now.year, now.month, now.day);
-    int steps = 0;
-    double heartRate = 0;
-    try {
-      final stepsData = await _health.getHealthDataFromTypes(midnight, now, [
-        HealthDataType.STEPS,
-      ]);
-      if (stepsData.isNotEmpty) {
-        steps = stepsData.map((e) => e.value as int).fold(0, (a, b) => a + b);
-      }
-      final hrData = await _health.getHealthDataFromTypes(midnight, now, [
-        HealthDataType.HEART_RATE,
-      ]);
-      if (hrData.isNotEmpty) {
-        heartRate =
-            hrData
-                .map((e) => (e.value as num).toDouble())
-                .fold(0.0, (a, b) => a + b) /
-            hrData.length;
-      }
-    } catch (e) {
-      // ignore
-    }
+    // Temporariamente comentado
+    // final now = DateTime.now();
+    // final midnight = DateTime(now.year, now.month, now.day);
+    // int steps = 0;
+    // double heartRate = 0;
+    // try {
+    //   final stepsData = await _health.getHealthDataFromTypes(midnight, now, [
+    //     HealthDataType.STEPS,
+    //   ]);
+    //   if (stepsData.isNotEmpty) {
+    //     steps = stepsData.map((e) => e.value as int).fold(0, (a, b) => a + b);
+    //   }
+    //   final hrData = await _health.getHealthDataFromTypes(midnight, now, [
+    //     HealthDataType.HEART_RATE,
+    //   ]);
+    //   if (hrData.isNotEmpty) {
+    //     heartRate =
+    //         hrData
+    //             .map((e) => (e.value as num).toDouble())
+    //             .fold(0.0, (a, b) => a + b) /
+    //         hrData.length;
+    //   }
+    // } catch (e) {
+    //   // ignore
+    // }
     setState(() {
-      _steps = steps;
-      _heartRate = heartRate;
+      _steps = 0; // Temporariamente 0
+      _heartRate = 0; // Temporariamente 0
     });
   }
 

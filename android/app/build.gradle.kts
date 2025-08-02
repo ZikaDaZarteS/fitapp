@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.academia.fitapp"
-        minSdk = 23 // 🔧 Firebase exige minSdk >= 19
+        minSdk = 26 // 🔧 Health Connect exige minSdk >= 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -21,6 +21,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -66,4 +67,7 @@ dependencies {
 
     // Firebase Analytics (opcional)
     // implementation("com.google.firebase:firebase-analytics")
+    
+    // Core library desugaring
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

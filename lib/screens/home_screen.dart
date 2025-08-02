@@ -211,7 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: loadWorkoutPlans,
         child: ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: 100, // Adicionar padding inferior para evitar overflow
+          ),
           itemCount: workoutPlans.length,
           itemBuilder: (context, index) {
             final plan = workoutPlans[index];
