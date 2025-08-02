@@ -54,7 +54,7 @@ Um aplicativo completo de fitness desenvolvido em Flutter com funcionalidades av
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/fitapp.git
+   git clone https://github.com/ZikaDaZarteS/fitapp.git
    cd fitapp
    ```
 
@@ -134,7 +134,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 **Diego**
 - Email: diegoribeiro359@gmail.com
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
+- GitHub: [@ZikaDaZarteS](https://github.com/ZikaDaZarteS)
 
 ## 🙏 Agradecimentos
 
