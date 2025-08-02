@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "707846215547",
+    "project_id": "academia-173e0",
+    "storage_bucket": "academia-173e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707846215547:android:886fdbb836e887618f0fde",
+        "android_client_info": {
+          "package_name": "com.academia.fitapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnfupeGpyziAikPPcmw6acspzMr33Efbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

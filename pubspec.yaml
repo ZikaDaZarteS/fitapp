@@ -1,0 +1,57 @@
+name: fitapp
+
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Ícones
+  cupertino_icons: ^1.0.8
+
+  # Logs
+  logger: ^2.0.2
+
+  # Banco de dados local
+  sqflite: ^2.3.0
+  path_provider: ^2.1.2
+  path: ^1.8.3
+
+  # Estado e UI
+  provider: ^6.1.2
+  flutter_slidable: ^4.0.0
+
+  # Firebase
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.19.0
+  cloud_firestore: ^4.15.0
+
+  # Image Picker
+  image_picker: ^1.0.7
+  health: ^8.0.0
+  flutter_local_notifications: ^16.1.0
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/dumbbells_bg.jpg
+    - assets/images/rat_1.jpg
+    - assets/images/rat_2.jpg
+    - assets/images/rat_3.jpg
+    - assets/images/rat_4.jpg
+    - assets/images/rat_5.jpg
+    - assets/images/rat_6.jpg
+    - assets/animations/
