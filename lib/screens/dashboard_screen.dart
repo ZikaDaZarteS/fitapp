@@ -62,136 +62,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF4CAF50)),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Editar Perfil'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UserForm()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.bar_chart),
-              title: const Text('Relatórios de Progresso'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProgressReportScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.star),
-              title: const Text('Assinatura'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SubscriptionScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.group),
-              title: const Text('Clubes'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ClubsScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Criar Grupo/Desafio'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ScoringModeScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.psychology),
-              title: const Text('Evolução do Rato'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RatEvolutionScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.play_arrow),
-              title: const Text('Começar'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const StartScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.watch),
-              title: const Text('Integração com Smartwatch'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SmartwatchIntegrationScreen(),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Sair'),
-              onTap: () async {
-                final navigator = Navigator.of(context);
-                navigator.pop();
-                await FirebaseAuth.instance.signOut();
-                if (!mounted) return;
-                navigator.pushNamedAndRemoveUntil('/login', (route) => false);
-              },
-            ),
-          ],
-        ),
-      ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFF667eea)),
@@ -203,7 +73,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   left: 20.0,
                   right: 20.0,
                   top: 20.0,
-                  bottom: 100.0, // Adicionar padding inferior para evitar overflow
+                  bottom:
+                      100.0, // Adicionar padding inferior para evitar overflow
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +149,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.1,
+                      childAspectRatio: 1.3,
                       children: [
                         _buildNavigationCard(
                           'Check-in',

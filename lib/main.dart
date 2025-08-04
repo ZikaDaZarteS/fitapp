@@ -15,10 +15,15 @@ void main() async {
 
   try {
     debugPrint('🚀 Iniciando Firebase...');
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    debugPrint('✅ Firebase inicializado com sucesso');
+    // Verificar se já foi inicializado
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      debugPrint('✅ Firebase inicializado com sucesso');
+    } else {
+      debugPrint('✅ Firebase já inicializado');
+    }
 
     // Teste de conexão com Firebase Auth
     try {
@@ -35,26 +40,39 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  fb_auth.User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listener para mudanças no estado de autenticação
+    fb_auth.FirebaseAuth.instance.authStateChanges().listen((user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
 
   Future<Widget> _decideStartScreen() async {
     final db = db_helper.DatabaseHelper();
-    final firebaseUser = fb_auth.FirebaseAuth.instance.currentUser;
+    final firebaseUser = _user ?? fb_auth.FirebaseAuth.instance.currentUser;
 
     if (firebaseUser != null) {
       try {
         final localUser = await db.getUser();
         if (localUser != null) {
           debugPrint('👤 Usuário local encontrado: ${localUser.email}');
-          // Verificar se precisa completar perfil (altura, peso, objetivo, etc.)
-          if (localUser.height == 0 && localUser.weight == 0) {
-            return const OnboardingScreen();
-          }
           return const MainMenuScreen();
         } else {
           await db.upsertUser(
-            // <== aqui está o ajuste!
             local_user.User(
               id: firebaseUser.uid,
               name: '',
@@ -65,7 +83,7 @@ class MyApp extends StatelessWidget {
             ),
           );
           debugPrint('📥 Usuário salvo localmente via Firebase');
-          return const OnboardingScreen();
+          return const MainMenuScreen();
         }
       } catch (e) {
         debugPrint('❌ Erro ao acessar usuário local: $e');
@@ -85,6 +103,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
+      initialRoute: '/',
       home: FutureBuilder<Widget>(
         future: _decideStartScreen(),
         builder: (context, snapshot) {
@@ -104,6 +123,11 @@ class MyApp extends StatelessWidget {
           }
         },
       ),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/main': (context) => const MainMenuScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
+      },
     );
   }
 }

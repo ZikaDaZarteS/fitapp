@@ -218,7 +218,7 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                               color: Colors.grey.withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(90),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.error,
                               color: Colors.grey,
                               size: 50,
@@ -365,9 +365,13 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+                        const Icon(
+                          Icons.auto_awesome,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
-                        Text(
+                        const Text(
                           'Animar Evolução',
                           style: TextStyle(
                             color: Colors.white,
@@ -536,7 +540,7 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                                 color: Colors.grey.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.error,
                                 color: Colors.grey,
                                 size: 20,

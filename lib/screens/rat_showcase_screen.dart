@@ -155,7 +155,11 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
                       color: Colors.grey.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(_ratSize / 2),
                     ),
-                    child: Icon(Icons.error, color: Colors.grey, size: 50),
+                    child: const Icon(
+                      Icons.error,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
                   );
                 },
               ),

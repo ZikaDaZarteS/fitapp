@@ -157,34 +157,10 @@ class _FriendsScreenState extends State<FriendsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Amigos'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            onPressed: () {
-              _showAddFriendDialog();
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const RankingScreen()),
-          );
-        },
-        backgroundColor: Colors.black,
-        tooltip: 'Ranking',
-        child: const Icon(Icons.emoji_events, color: Colors.white),
-      ),
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
+          const SizedBox(height: 40),
           // Campo para adicionar amigos
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -374,7 +350,8 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       padding: const EdgeInsets.only(
                         left: 16.0,
                         right: 16.0,
-                        bottom: 100, // Adicionar padding inferior para evitar overflow
+                        bottom:
+                            100, // Adicionar padding inferior para evitar overflow
                       ),
                       itemCount: _friends.length,
                       itemBuilder: (context, index) {

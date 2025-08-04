@@ -12,7 +12,20 @@
           "package_name": "com.academia.fitapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "707846215547-030luoufivclp8v3no9gevitn0k6quij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.academia.fitapp",
+            "certificate_hash": "b35adf00d8b5f68b4800e5581e5e489a49ae8816"
+          }
+        },
+        {
+          "client_id": "707846215547-r2d4c2k7gupfv6g5fq84lj33n5iia666.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBnfupeGpyziAikPPcmw6acspzMr33Efbc"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707846215547-r2d4c2k7gupfv6g5fq84lj33n5iia666.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "707846215547-dkbkpf075q3h7pd9ulgsda86i3bca2b4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fitapp"
+              }
+            }
+          ]
         }
       }
     }

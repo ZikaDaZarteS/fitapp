@@ -12,8 +12,8 @@ class SmartwatchIntegrationScreen extends StatefulWidget {
 class _SmartwatchIntegrationScreenState
     extends State<SmartwatchIntegrationScreen> {
   bool _authorized = false;
-  int _steps = 0;
-  double _heartRate = 0;
+  final int _steps = 0;
+  final double _heartRate = 0;
   bool _loading = false;
 
   // Temporariamente comentado devido a problemas de compatibilidade
@@ -34,38 +34,6 @@ class _SmartwatchIntegrationScreenState
     setState(() {
       _authorized = false; // Temporariamente false
       _loading = false;
-    });
-  }
-
-  Future<void> _fetchData() async {
-    // Temporariamente comentado
-    // final now = DateTime.now();
-    // final midnight = DateTime(now.year, now.month, now.day);
-    // int steps = 0;
-    // double heartRate = 0;
-    // try {
-    //   final stepsData = await _health.getHealthDataFromTypes(midnight, now, [
-    //     HealthDataType.STEPS,
-    //   ]);
-    //   if (stepsData.isNotEmpty) {
-    //     steps = stepsData.map((e) => e.value as int).fold(0, (a, b) => a + b);
-    //   }
-    //   final hrData = await _health.getHealthDataFromTypes(midnight, now, [
-    //     HealthDataType.HEART_RATE,
-    //   ]);
-    //   if (hrData.isNotEmpty) {
-    //     heartRate =
-    //         hrData
-    //             .map((e) => (e.value as num).toDouble())
-    //             .fold(0.0, (a, b) => a + b) /
-    //         hrData.length;
-    //   }
-    // } catch (e) {
-    //   // ignore
-    // }
-    setState(() {
-      _steps = 0; // Temporariamente 0
-      _heartRate = 0; // Temporariamente 0
     });
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/workout.dart' as model_workout;
 import '../models/workout_plan.dart';
 import '../screens/workout_detail_screen.dart' as screen_workout_detail;
+import '../screens/exercise_management_screen.dart';
 import '../db/database_helper.dart';
 import '../db/firestore_helper.dart';
 
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.only(
             left: 16,
             right: 16,
-            top: 16,
+            top: 0,
             bottom: 100, // Adicionar padding inferior para evitar overflow
           ),
           itemCount: workoutPlans.length,
@@ -247,6 +248,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const Spacer(),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.fitness_center,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ExerciseManagementScreen(workoutPlan: plan),
+                              ),
+                            );
+                          },
+                        ),
                         IconButton(
                           icon: const Icon(Icons.edit, color: Colors.black),
                           onPressed: () {

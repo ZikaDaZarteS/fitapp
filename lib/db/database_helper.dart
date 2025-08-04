@@ -30,7 +30,7 @@ class DatabaseHelper {
       debugPrint('🌐 Executando em modo web - retornando banco simulado');
       return await openDatabase(
         'in_memory_db',
-        version: 2,
+        version: 3,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       );
@@ -39,7 +39,7 @@ class DatabaseHelper {
       debugPrint('🌐 Executando em modo web - retornando banco simulado');
       return await openDatabase(
         'in_memory_db',
-        version: 2,
+        version: 3,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       );
@@ -50,7 +50,7 @@ class DatabaseHelper {
       String path = join(documentsDirectory.path, "fit_app.db");
       return await openDatabase(
         path,
-        version: 2,
+        version: 3,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       );
@@ -58,7 +58,7 @@ class DatabaseHelper {
       debugPrint('❌ Erro ao inicializar banco: $e');
       return await openDatabase(
         'in_memory_db',
-        version: 2,
+        version: 3,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       );
@@ -75,11 +75,10 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        firestoreId TEXT,
+        id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT NOT NULL,
-        height INTEGER,
+        height REAL,
         weight REAL,
         age INTEGER,
         checkedIn INTEGER DEFAULT 0,
@@ -134,6 +133,26 @@ class DatabaseHelper {
         notes TEXT
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE exercises (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        workoutPlanId INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        muscleGroup TEXT NOT NULL,
+        description TEXT NOT NULL,
+        instructions TEXT NOT NULL,
+        imageUrl TEXT,
+        videoUrl TEXT,
+        sets INTEGER,
+        reps INTEGER,
+        restTime INTEGER,
+        equipment TEXT,
+        difficulty TEXT DEFAULT 'Intermediário',
+        FOREIGN KEY (workoutPlanId) REFERENCES workout_plans (id) ON DELETE CASCADE
+      )
+    ''');
+
     await _insertDefaultWorkoutPlans(db);
   }
 
@@ -164,6 +183,40 @@ class DatabaseHelper {
         debugPrint('✅ Coluna "imagePath" adicionada à tabela checkins');
       } catch (e) {
         debugPrint('ℹ️ Coluna "imagePath" já existe na tabela checkins: $e');
+      }
+    }
+
+    if (oldVersion < 3) {
+      // Recriar tabela users com nova estrutura
+      try {
+        await db.execute('DROP TABLE IF EXISTS users');
+        await db.execute('''
+          CREATE TABLE users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            height REAL,
+            weight REAL,
+            age INTEGER,
+            checkedIn INTEGER DEFAULT 0,
+            goal TEXT,
+            level TEXT,
+            time TEXT,
+            equipments TEXT,
+            lastCheckIn TEXT,
+            gender TEXT,
+            experience TEXT,
+            medicalRestrictions TEXT,
+            exercisePreferences TEXT,
+            frequency TEXT,
+            customGoal TEXT,
+            acceptTerms INTEGER,
+            profilePhotoPath TEXT
+          )
+        ''');
+        debugPrint('✅ Tabela users recriada com nova estrutura');
+      } catch (e) {
+        debugPrint('❌ Erro ao recriar tabela users: $e');
       }
     }
   }
@@ -234,6 +287,171 @@ class DatabaseHelper {
       user.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<int> clearUser() async {
+    var dbClient = await db;
+    return await dbClient.delete('users');
+  }
+
+  // Armazenamento temporário para exercícios no modo web
+  static final Map<int, List<Exercise>> _webExercises = {};
+
+  // Métodos para gerenciar exercícios
+  Future<List<Exercise>> getExercisesForWorkoutPlan(int workoutPlanId) async {
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - retornando exercícios do armazenamento temporário',
+      );
+
+      // Se não existem exercícios para este plano, retorna lista vazia
+      if (!_webExercises.containsKey(workoutPlanId)) {
+        debugPrint(
+          '📋 Nenhum exercício encontrado para WorkoutPlan ID: $workoutPlanId',
+        );
+        return [];
+      }
+
+      final exercises = _webExercises[workoutPlanId] ?? [];
+      debugPrint('✅ Exercícios encontrados: ${exercises.length}');
+      for (var exercise in exercises) {
+        debugPrint('  - ${exercise.name}');
+      }
+      return exercises;
+    }
+
+    try {
+      debugPrint('🔄 Buscando exercícios para WorkoutPlan ID: $workoutPlanId');
+
+      var dbClient = await db;
+
+      // Verificar se a tabela existe
+      final tables = await dbClient.query(
+        'sqlite_master',
+        where: 'type = ? AND name = ?',
+        whereArgs: ['table', 'exercises'],
+      );
+      if (tables.isEmpty) {
+        debugPrint('❌ Tabela exercises não existe');
+        return [];
+      }
+
+      debugPrint('✅ Tabela exercises encontrada');
+
+      final List<Map<String, dynamic>> maps = await dbClient.query(
+        'exercises',
+        where: 'workoutPlanId = ?',
+        whereArgs: [workoutPlanId],
+      );
+
+      debugPrint('📊 Exercícios encontrados: ${maps.length}');
+      for (var map in maps) {
+        debugPrint('  - ${map['name']} (ID: ${map['id']})');
+      }
+
+      final exercises = List.generate(
+        maps.length,
+        (i) => Exercise.fromMap(maps[i]),
+      );
+      debugPrint('✅ Exercícios convertidos: ${exercises.length}');
+
+      return exercises;
+    } catch (e) {
+      debugPrint('❌ Erro ao buscar exercícios: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
+      return [];
+    }
+  }
+
+  Future<int> addExerciseToWorkoutPlan(
+    int workoutPlanId,
+    Exercise exercise,
+  ) async {
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - adicionando exercício ao armazenamento temporário',
+      );
+
+      // Inicializa a lista se não existir
+      if (!_webExercises.containsKey(workoutPlanId)) {
+        _webExercises[workoutPlanId] = [];
+      }
+
+      // Adiciona o exercício à lista
+      _webExercises[workoutPlanId]!.add(exercise);
+
+      debugPrint(
+        '✅ Exercício "${exercise.name}" adicionado ao WorkoutPlan ID: $workoutPlanId',
+      );
+      debugPrint(
+        '📊 Total de exercícios no plano: ${_webExercises[workoutPlanId]!.length}',
+      );
+
+      return 1;
+    }
+
+    try {
+      debugPrint('🔄 Adicionando exercício ao banco de dados');
+      debugPrint('📋 WorkoutPlan ID: $workoutPlanId');
+      debugPrint('💪 Exercise: ${exercise.name}');
+
+      var dbClient = await db;
+      final exerciseMap = exercise.toMap();
+      exerciseMap['workoutPlanId'] = workoutPlanId;
+
+      debugPrint('📝 Exercise Map: $exerciseMap');
+
+      final result = await dbClient.insert('exercises', exerciseMap);
+      debugPrint('✅ Exercício adicionado com ID: $result');
+      return result;
+    } catch (e) {
+      debugPrint('❌ Erro ao adicionar exercício: $e');
+      debugPrint('❌ Stack trace: ${StackTrace.current}');
+      return 0;
+    }
+  }
+
+  Future<int> removeExerciseFromWorkoutPlan(
+    int workoutPlanId,
+    int exerciseId,
+  ) async {
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - removendo exercício do armazenamento temporário',
+      );
+
+      if (!_webExercises.containsKey(workoutPlanId)) {
+        debugPrint(
+          '❌ Nenhum exercício encontrado para WorkoutPlan ID: $workoutPlanId',
+        );
+        return 0;
+      }
+
+      final exercises = _webExercises[workoutPlanId]!;
+      if (exerciseId > 0 && exerciseId <= exercises.length) {
+        final removedExercise = exercises.removeAt(exerciseId - 1);
+        debugPrint(
+          '✅ Exercício "${removedExercise.name}" removido do WorkoutPlan ID: $workoutPlanId',
+        );
+        debugPrint('📊 Total de exercícios no plano: ${exercises.length}');
+        return 1;
+      } else {
+        debugPrint('❌ ID do exercício inválido: $exerciseId');
+        return 0;
+      }
+    }
+
+    try {
+      var dbClient = await db;
+      return await dbClient.delete(
+        'exercises',
+        where: 'id = ? AND workoutPlanId = ?',
+        whereArgs: [exerciseId, workoutPlanId],
+      );
+    } catch (e) {
+      debugPrint('❌ Erro ao remover exercício: $e');
+      return 0;
+    }
   }
 
   Future<app_user.User?> getUser() async {
@@ -446,36 +664,43 @@ class DatabaseHelper {
   List<WorkoutPlan> _getDefaultWorkoutPlans() {
     return [
       WorkoutPlan(
+        id: 1,
         dayOfWeek: 'Segunda-feira',
         workoutTypes: ['Peito', 'Tríceps'],
         notes: 'Treino de peito e tríceps',
       ),
       WorkoutPlan(
+        id: 2,
         dayOfWeek: 'Terça-feira',
         workoutTypes: ['Costas', 'Bíceps'],
         notes: 'Treino de costas e bíceps',
       ),
       WorkoutPlan(
+        id: 3,
         dayOfWeek: 'Quarta-feira',
         workoutTypes: ['Perna'],
         notes: 'Treino de perna',
       ),
       WorkoutPlan(
+        id: 4,
         dayOfWeek: 'Quinta-feira',
         workoutTypes: ['Ombro', 'Abdômen'],
         notes: 'Treino de ombro e abdômen',
       ),
       WorkoutPlan(
+        id: 5,
         dayOfWeek: 'Sexta-feira',
         workoutTypes: ['Peito', 'Tríceps'],
         notes: 'Treino de peito e tríceps',
       ),
       WorkoutPlan(
+        id: 6,
         dayOfWeek: 'Sábado',
         workoutTypes: ['Costas', 'Bíceps'],
         notes: 'Treino de costas e bíceps',
       ),
       WorkoutPlan(
+        id: 7,
         dayOfWeek: 'Domingo',
         workoutTypes: ['Descanso'],
         notes: 'Dia de descanso',

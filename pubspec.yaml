@@ -3,7 +3,7 @@ name: fitapp
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.8.1
@@ -31,9 +31,17 @@ dependencies:
   firebase_core: ^2.27.0
   firebase_auth: ^4.19.0
   cloud_firestore: ^4.15.0
+  firebase_storage: ^11.6.0
+
+  # Social Login
+  google_sign_in: ^6.2.1
+
+  # SVG Support
+  flutter_svg: ^2.0.9
 
   # Image Picker
   image_picker: ^1.0.7
+  shared_preferences: ^2.2.2
   # health: ^8.1.0  # Temporariamente comentado devido a problemas de compatibilidade
   # flutter_local_notifications: ^16.1.0  # Temporariamente comentado devido a problemas de compatibilidade
   intl: ^0.18.0
@@ -48,6 +56,7 @@ flutter:
 
   assets:
     - assets/images/dumbbells_bg.jpg
+    - assets/images/google_logo.svg
     - assets/images/rat_1.jpg
     - assets/images/rat_2.jpg
     - assets/images/rat_3.jpg
