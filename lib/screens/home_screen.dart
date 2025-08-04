@@ -212,23 +212,18 @@ class _HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: loadWorkoutPlans,
         child: ListView.builder(
-          padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 0,
-            bottom: 100, // Adicionar padding inferior para evitar overflow
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           itemCount: workoutPlans.length,
           itemBuilder: (context, index) {
             final plan = workoutPlans[index];
             return Card(
-              elevation: 4,
-              margin: const EdgeInsets.only(bottom: 16),
+              elevation: 2,
+              margin: const EdgeInsets.only(bottom: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -243,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           plan.dayOfWeek,
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -273,18 +268,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 12),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 6,
+                      runSpacing: 6,
                       children: plan.workoutTypes.map((type) {
-                        return Chip(
-                          label: Text(
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.blue.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
                             type,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.blue[700],
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          backgroundColor: Colors.black,
                         );
                       }).toList(),
                     ),
