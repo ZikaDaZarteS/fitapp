@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../models/checkin.dart';
 import '../models/rat_evolution.dart';
 import 'clubs_screen.dart';
 import 'scoring_mode_screen.dart';
 import 'rat_evolution_screen.dart';
 import 'checkin_screen.dart';
-import 'user_form.dart';
-import 'progress_report_screen.dart';
-import 'subscription_screen.dart';
-import 'smartwatch_integration_screen.dart';
-import 'start_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -69,12 +63,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           : RefreshIndicator(
               onRefresh: _loadDashboardData,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  right: 20.0,
-                  top: 20.0,
-                  bottom:
-                      100.0, // Adicionar padding inferior para evitar overflow
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +287,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           color: Colors.grey.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(40),
                         ),
-                        child: Icon(Icons.error, color: Colors.grey, size: 30),
+                        child: const Icon(
+                          Icons.error,
+                          color: Colors.grey,
+                          size: 30,
+                        ),
                       );
                     },
                   ),
@@ -428,33 +423,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: color, size: 24),
+                child: Icon(icon, color: color, size: 20),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 description,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -471,6 +469,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // Simulando inserção para demonstração
       await _loadDashboardData();
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Check-in realizado com sucesso! 🎉'),
@@ -482,6 +481,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Erro ao realizar check-in'),

@@ -481,7 +481,7 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
   }
 
   Widget _buildNextStages() {
-    final List<RatStage> allStages = RatStage.values;
+    const List<RatStage> allStages = RatStage.values;
     final int currentIndex = allStages.indexOf(_currentEvolution.stage);
 
     return Column(

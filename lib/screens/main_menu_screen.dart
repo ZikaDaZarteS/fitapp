@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:fitapp/screens/dashboard_screen.dart';
 import 'package:fitapp/screens/home_screen.dart';
 import 'package:fitapp/screens/friends_screen.dart';
-import 'package:fitapp/screens/user_form.dart';
+
 import 'package:fitapp/screens/subscription_screen.dart';
 import 'package:fitapp/screens/smartwatch_integration_screen.dart';
 import 'package:fitapp/screens/progress_report_screen.dart';
 import 'package:fitapp/screens/clubs_screen.dart';
 import 'package:fitapp/screens/scoring_mode_screen.dart';
-import 'package:fitapp/screens/start_screen.dart';
+
 import 'package:fitapp/screens/rat_evolution_screen.dart';
+import 'package:fitapp/screens/calendar_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitapp/db/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -207,7 +208,7 @@ class _MoreScreenState extends State<_MoreScreen> {
             // Header com gradiente
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -220,14 +221,14 @@ class _MoreScreenState extends State<_MoreScreen> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   // Avatar clicável
                   GestureDetector(
                     onTap: _pickImage,
                     child: Stack(
                       children: [
                         CircleAvatar(
-                          radius: 50,
+                          radius: 40,
                           backgroundColor: Colors.white,
                           backgroundImage: _selectedImagePath != null
                               ? (kIsWeb
@@ -240,7 +241,7 @@ class _MoreScreenState extends State<_MoreScreen> {
                               ? const Text(
                                   'DA',
                                   style: TextStyle(
-                                    fontSize: 32,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
@@ -251,35 +252,40 @@ class _MoreScreenState extends State<_MoreScreen> {
                           bottom: 0,
                           right: 0,
                           child: Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               color: Colors.blue,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
                             ),
                             child: const Icon(
                               Icons.camera_alt,
                               color: Colors.white,
-                              size: 16,
+                              size: 12,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   const Text(
                     'DIEGO AMANCIO RIBEIRO',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   const Text(
                     'diegoribeiro359@gmail.com',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -287,7 +293,7 @@ class _MoreScreenState extends State<_MoreScreen> {
             const SizedBox(height: 24),
             // Opções em cards
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
                   _buildOptionCard(
@@ -327,6 +333,20 @@ class _MoreScreenState extends State<_MoreScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const ScoringModeScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildOptionCard(
+                    icon: Icons.calendar_today,
+                    title: 'Calendário de Check-ins',
+                    description: 'Veja seus check-ins por data',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CalendarScreen(),
                         ),
                       );
                     },
@@ -442,30 +462,33 @@ class _MoreScreenState extends State<_MoreScreen> {
     required VoidCallback onTap,
   }) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 1,
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: Colors.green.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(6),
           ),
-          child: Icon(icon, color: Colors.green, size: 24),
+          child: Icon(icon, color: Colors.green, size: 20),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         subtitle: Text(
           description,
-          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          style: TextStyle(color: Colors.grey[600], fontSize: 13),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: const Icon(
           Icons.arrow_forward_ios,
           color: Colors.grey,
-          size: 16,
+          size: 14,
         ),
         onTap: () {
           debugPrint('🖱️ Card "$title" pressionado');

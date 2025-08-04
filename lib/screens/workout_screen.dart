@@ -61,8 +61,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               if (nameCtrl.text.isNotEmpty) {
                 await dbHelper.insertExercise(
                   Exercise(
-                    workoutId: widget.workout.id!,
                     name: nameCtrl.text,
+                    muscleGroup: 'Geral',
+                    description: 'Exercício personalizado',
+                    instructions: 'Execute conforme orientação do instrutor',
                     sets: int.tryParse(setsCtrl.text) ?? 0,
                     reps: int.tryParse(repsCtrl.text) ?? 0,
                   ),
@@ -118,8 +120,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 await dbHelper.updateExercise(
                   Exercise(
                     id: exercise.id,
-                    workoutId: exercise.workoutId,
                     name: nameCtrl.text,
+                    muscleGroup: exercise.muscleGroup,
+                    description: exercise.description,
+                    instructions: exercise.instructions,
                     sets: int.tryParse(setsCtrl.text) ?? 0,
                     reps: int.tryParse(repsCtrl.text) ?? 0,
                   ),
