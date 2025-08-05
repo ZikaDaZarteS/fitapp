@@ -70,25 +70,26 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 }
 
-class _ScreenWrapper extends StatelessWidget {
-  final String title;
-  final Widget child;
+// Classe removida pois não está sendo utilizada
+// class _ScreenWrapper extends StatelessWidget {
+//   final String title;
+//   final Widget child;
 
-  const _ScreenWrapper({required this.title, required this.child});
+//   const _ScreenWrapper({required this.title, required this.child});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: child,
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(title),
+//         backgroundColor: Colors.black,
+//         foregroundColor: Colors.white,
+//         elevation: 0,
+//       ),
+//       body: child,
+//     );
+//   }
+// }
 
 class RankingScreen extends StatelessWidget {
   const RankingScreen({super.key});

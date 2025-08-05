@@ -411,23 +411,24 @@ class _FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  void _showAddFriendDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Adicionar amigo'),
-        content: const Text(
-          'Use a barra de pesquisa acima para encontrar usuários e adicioná-los como amigos.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+  // Método removido pois não está sendo utilizado
+  // void _showAddFriendDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Adicionar amigo'),
+  //       content: const Text(
+  //         'Use a barra de pesquisa acima para encontrar usuários e adicioná-los como amigos.',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('OK'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _showFriendProfile(app_user.User user) {
     showDialog(
