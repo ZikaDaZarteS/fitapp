@@ -1,6 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 // Conditional import for dart:io
 
@@ -228,6 +230,11 @@ class DatabaseHelper {
   }
 
   Future<List<Workout>> getWorkouts() async {
+    if (kIsWeb) {
+      debugPrint('🌐 Executando em modo web - retornando treinos simulados');
+      return []; // Retorna lista vazia no modo web por enquanto
+    }
+    
     var dbClient = await db;
     List<Map<String, dynamic>> maps = await dbClient.query('workouts');
     return maps.map((m) => Workout.fromMap(m)).toList();
@@ -270,6 +277,32 @@ class DatabaseHelper {
   }
 
   Future<int> updateExercise(Exercise exercise) async {
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - atualizando exercício no armazenamento temporário',
+      );
+
+      // Procurar o exercício em todos os planos de treino
+      for (var workoutPlanId in _webExercises.keys) {
+        final exercises = _webExercises[workoutPlanId]!;
+        final index = exercises.indexWhere((e) => e.id == exercise.id);
+        if (index != -1) {
+          exercises[index] = exercise;
+          debugPrint(
+            '✅ Exercício "${exercise.name}" atualizado no WorkoutPlan ID: $workoutPlanId',
+          );
+
+          // Salvar no SharedPreferences
+          await _saveExercisesToStorage();
+
+          return 1;
+        }
+      }
+
+      debugPrint('❌ Exercício não encontrado para atualização');
+      return 0;
+    }
+
     var dbClient = await db;
     return await dbClient.update(
       'exercises',
@@ -290,6 +323,11 @@ class DatabaseHelper {
   }
 
   Future<int> clearUser() async {
+    if (kIsWeb) {
+      debugPrint('🌐 Executando em modo web - limpando dados do usuário');
+      return 1; // Simula sucesso no modo web
+    }
+
     var dbClient = await db;
     return await dbClient.delete('users');
   }
@@ -297,12 +335,67 @@ class DatabaseHelper {
   // Armazenamento temporário para exercícios no modo web
   static final Map<int, List<Exercise>> _webExercises = {};
 
+    // Método para salvar exercícios no SharedPreferences
+  Future<void> _saveExercisesToStorage() async {
+    if (kIsWeb) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final Map<String, dynamic> data = {};
+
+        _webExercises.forEach((workoutPlanId, exercises) {
+          data[workoutPlanId.toString()] = exercises
+              .map((e) => e.toMap())
+              .toList();
+        });
+
+        final jsonString = jsonEncode(data);
+        await prefs.setString('web_exercises', jsonString);
+        debugPrint('💾 Exercícios salvos no SharedPreferences: $jsonString');
+      } catch (e) {
+        debugPrint('❌ Erro ao salvar exercícios: $e');
+      }
+    }
+  }
+  
+  // Método para carregar exercícios do SharedPreferences
+  Future<void> _loadExercisesFromStorage() async {
+    if (kIsWeb) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final String? dataString = prefs.getString('web_exercises');
+        
+        if (dataString != null) {
+          debugPrint('📂 Carregando exercícios do SharedPreferences: $dataString');
+          final Map<String, dynamic> data = jsonDecode(dataString);
+          
+          _webExercises.clear();
+          data.forEach((workoutPlanIdStr, exercisesList) {
+            final workoutPlanId = int.parse(workoutPlanIdStr);
+            final exercises = (exercisesList as List)
+                .map((e) => Exercise.fromMap(e as Map<String, dynamic>))
+                .toList();
+            _webExercises[workoutPlanId] = exercises;
+          });
+          
+          debugPrint('✅ Exercícios carregados: ${_webExercises.length} planos');
+        }
+      } catch (e) {
+        debugPrint('❌ Erro ao carregar exercícios: $e');
+      }
+    }
+  }
+
   // Métodos para gerenciar exercícios
   Future<List<Exercise>> getExercisesForWorkoutPlan(int workoutPlanId) async {
     if (kIsWeb) {
       debugPrint(
         '🌐 Executando em modo web - retornando exercícios do armazenamento temporário',
       );
+
+      // Carregar dados salvos se necessário
+      if (_webExercises.isEmpty) {
+        await _loadExercisesFromStorage();
+      }
 
       // Se não existem exercícios para este plano, retorna lista vazia
       if (!_webExercises.containsKey(workoutPlanId)) {
@@ -387,6 +480,9 @@ class DatabaseHelper {
         '📊 Total de exercícios no plano: ${_webExercises[workoutPlanId]!.length}',
       );
 
+      // Salvar no SharedPreferences
+      await _saveExercisesToStorage();
+
       return 1;
     }
 
@@ -434,6 +530,10 @@ class DatabaseHelper {
           '✅ Exercício "${removedExercise.name}" removido do WorkoutPlan ID: $workoutPlanId',
         );
         debugPrint('📊 Total de exercícios no plano: ${exercises.length}');
+
+        // Salvar no SharedPreferences
+        await _saveExercisesToStorage();
+
         return 1;
       } else {
         debugPrint('❌ ID do exercício inválido: $exerciseId');

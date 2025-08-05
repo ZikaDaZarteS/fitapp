@@ -17,7 +17,7 @@ class ExerciseManagementScreen extends StatefulWidget {
       _ExerciseManagementScreenState();
 }
 
-class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> {
+class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> with WidgetsBindingObserver {
   final ExerciseController _exerciseController = ExerciseController();
   List<Exercise> exercises = [];
   bool isLoading = true;
@@ -25,7 +25,21 @@ class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadExercises();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      loadExercises();
+    }
   }
 
   Future<void> loadExercises() async {
@@ -91,8 +105,9 @@ class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> {
           label: 'Número de Séries',
           hint: 'Ex: 3',
           initialValue: exercise.sets?.toString() ?? '',
-          onSave: (newSets) {
-            _exerciseController.updateExerciseSets(exercise, newSets, context);
+          onSave: (newSets) async {
+            await _exerciseController.updateExerciseSets(exercise, newSets, context);
+            await loadExercises();
           },
         );
       },
@@ -108,8 +123,9 @@ class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> {
           label: 'Número de Repetições',
           hint: 'Ex: 12',
           initialValue: exercise.reps?.toString() ?? '',
-          onSave: (newReps) {
-            _exerciseController.updateExerciseReps(exercise, newReps, context);
+          onSave: (newReps) async {
+            await _exerciseController.updateExerciseReps(exercise, newReps, context);
+            await loadExercises();
           },
         );
       },

@@ -188,26 +188,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
-        label: const Text('Novo treino'),
+      appBar: AppBar(
+        title: const Text(
+          'MEUS TREINOS',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const screen_workout_detail.WorkoutDetailScreen(
-                workout: null,
-              ),
-            ),
-          );
-          if (result is model_workout.Workout) {
-            await firestoreHelper.addWorkout(result);
-            await dbHelper.insertWorkout(result);
-            if (mounted) loadWorkouts();
-          }
-        },
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const screen_workout_detail.WorkoutDetailScreen(
+                    workout: null,
+                  ),
+                ),
+              );
+              if (result is model_workout.Workout) {
+                await firestoreHelper.addWorkout(result);
+                await dbHelper.insertWorkout(result);
+                if (mounted) loadWorkouts();
+              }
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: loadWorkoutPlans,
