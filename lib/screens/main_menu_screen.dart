@@ -11,6 +11,7 @@ import 'package:fitapp/screens/scoring_mode_screen.dart';
 
 import 'package:fitapp/screens/rat_evolution_screen.dart';
 import 'package:fitapp/screens/calendar_screen.dart';
+import 'package:fitapp/screens/settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitapp/db/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -287,6 +288,29 @@ class _MoreScreenState extends State<_MoreScreen> {
                     'diegoribeiro359@gmail.com',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                     textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  // Botão de configurações
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
                   ),
                 ],
               ),

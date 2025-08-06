@@ -100,4 +100,50 @@ class User {
       profilePhotoPath: map['profilePhotoPath'] as String?,
     );
   }
+
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    double? height,
+    double? weight,
+    int? age,
+    int? checkedIn,
+    String? lastCheckIn,
+    String? goal,
+    String? level,
+    String? time,
+    String? equipments,
+    String? gender,
+    String? experience,
+    String? medicalRestrictions,
+    List<String>? exercisePreferences,
+    String? frequency,
+    String? customGoal,
+    bool? acceptTerms,
+    String? profilePhotoPath,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      age: age ?? this.age,
+      checkedIn: checkedIn ?? this.checkedIn,
+      lastCheckIn: lastCheckIn ?? this.lastCheckIn,
+      goal: goal ?? this.goal,
+      level: level ?? this.level,
+      time: time ?? this.time,
+      equipments: equipments ?? this.equipments,
+      gender: gender ?? this.gender,
+      experience: experience ?? this.experience,
+      medicalRestrictions: medicalRestrictions ?? this.medicalRestrictions,
+      exercisePreferences: exercisePreferences ?? this.exercisePreferences,
+      frequency: frequency ?? this.frequency,
+      customGoal: customGoal ?? this.customGoal,
+      acceptTerms: acceptTerms ?? this.acceptTerms,
+      profilePhotoPath: profilePhotoPath ?? this.profilePhotoPath,
+    );
+  }
 }

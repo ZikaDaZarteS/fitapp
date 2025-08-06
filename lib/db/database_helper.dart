@@ -234,7 +234,7 @@ class DatabaseHelper {
       debugPrint('🌐 Executando em modo web - retornando treinos simulados');
       return []; // Retorna lista vazia no modo web por enquanto
     }
-    
+
     var dbClient = await db;
     List<Map<String, dynamic>> maps = await dbClient.query('workouts');
     return maps.map((m) => Workout.fromMap(m)).toList();
@@ -335,7 +335,7 @@ class DatabaseHelper {
   // Armazenamento temporário para exercícios no modo web
   static final Map<int, List<Exercise>> _webExercises = {};
 
-    // Método para salvar exercícios no SharedPreferences
+  // Método para salvar exercícios no SharedPreferences
   Future<void> _saveExercisesToStorage() async {
     if (kIsWeb) {
       try {
@@ -356,18 +356,20 @@ class DatabaseHelper {
       }
     }
   }
-  
+
   // Método para carregar exercícios do SharedPreferences
   Future<void> _loadExercisesFromStorage() async {
     if (kIsWeb) {
       try {
         final prefs = await SharedPreferences.getInstance();
         final String? dataString = prefs.getString('web_exercises');
-        
+
         if (dataString != null) {
-          debugPrint('📂 Carregando exercícios do SharedPreferences: $dataString');
+          debugPrint(
+            '📂 Carregando exercícios do SharedPreferences: $dataString',
+          );
           final Map<String, dynamic> data = jsonDecode(dataString);
-          
+
           _webExercises.clear();
           data.forEach((workoutPlanIdStr, exercisesList) {
             final workoutPlanId = int.parse(workoutPlanIdStr);
@@ -376,7 +378,7 @@ class DatabaseHelper {
                 .toList();
             _webExercises[workoutPlanId] = exercises;
           });
-          
+
           debugPrint('✅ Exercícios carregados: ${_webExercises.length} planos');
         }
       } catch (e) {
@@ -555,12 +557,112 @@ class DatabaseHelper {
   }
 
   Future<app_user.User?> getUser() async {
-    var dbClient = await db;
-    List<Map<String, dynamic>> maps = await dbClient.query('users');
-    if (maps.isNotEmpty) {
-      return app_user.User.fromMap(maps.first);
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - retornando usuário do SharedPreferences',
+      );
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString('user_name') ?? 'DIEGO AMANCIO RIBEIRO';
+      final email =
+          prefs.getString('user_email') ?? 'diegoribeiro359@gmail.com';
+
+      return app_user.User(
+        id: '1',
+        name: name,
+        email: email,
+        height: 175.0,
+        weight: 70.0,
+        age: 25,
+      );
     }
-    return null;
+
+    try {
+      var dbClient = await db;
+      List<Map<String, dynamic>> maps = await dbClient.query('users');
+      if (maps.isNotEmpty) {
+        return app_user.User.fromMap(maps.first);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('❌ Erro ao buscar usuário: $e');
+      return null;
+    }
+  }
+
+  Future<int> updateUser(app_user.User user) async {
+    if (kIsWeb) {
+      debugPrint(
+        '🌐 Executando em modo web - simulando atualização de usuário',
+      );
+      // Para web, salvar no SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_name', user.name);
+      await prefs.setString('user_email', user.email);
+      return 1;
+    }
+
+    try {
+      var dbClient = await db;
+      return await dbClient.update(
+        'users',
+        user.toMap(),
+        where: 'id = ?',
+        whereArgs: [user.id],
+      );
+    } catch (e) {
+      debugPrint('❌ Erro ao atualizar usuário: $e');
+      return 0;
+    }
+  }
+
+  Future<int> updateUserName(String name) async {
+    if (kIsWeb) {
+      debugPrint('🌐 Executando em modo web - simulando atualização de nome');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_name', name);
+      return 1;
+    }
+
+    try {
+      var dbClient = await db;
+      List<Map<String, dynamic>> existing = await dbClient.query('users');
+      if (existing.isEmpty) return 0;
+
+      return await dbClient.update(
+        'users',
+        {'name': name},
+        where: 'id = ?',
+        whereArgs: [existing.first['id']],
+      );
+    } catch (e) {
+      debugPrint('❌ Erro ao atualizar nome: $e');
+      return 0;
+    }
+  }
+
+  Future<int> updateUserEmail(String email) async {
+    if (kIsWeb) {
+      debugPrint('🌐 Executando em modo web - simulando atualização de email');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_email', email);
+      return 1;
+    }
+
+    try {
+      var dbClient = await db;
+      List<Map<String, dynamic>> existing = await dbClient.query('users');
+      if (existing.isEmpty) return 0;
+
+      return await dbClient.update(
+        'users',
+        {'email': email},
+        where: 'id = ?',
+        whereArgs: [existing.first['id']],
+      );
+    } catch (e) {
+      debugPrint('❌ Erro ao atualizar email: $e');
+      return 0;
+    }
   }
 
   Future<List<app_user.User>> getUsers() async {
