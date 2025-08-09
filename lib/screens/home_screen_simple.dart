@@ -1,67 +1,38 @@
 import 'package:flutter/material.dart';
-import '../db/database_helper.dart';
-import '../db/firestore_helper.dart';
 import '../models/workout_plan.dart';
-import '../models/workout.dart' as model_workout;
-import 'exercise_management_screen.dart';
-import 'workout_detail_screen.dart' as screen_workout_detail;
+import '../screens/exercise_management_screen.dart';
+import '../db/database_helper.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreenSimple extends StatefulWidget {
+  const HomeScreenSimple({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreenSimple> createState() => _HomeScreenSimpleState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final DatabaseHelper dbHelper = DatabaseHelper();
-  final FirestoreHelper firestoreHelper = FirestoreHelper();
+class _HomeScreenSimpleState extends State<HomeScreenSimple> {
+  final dbHelper = DatabaseHelper();
   List<WorkoutPlan> workoutPlans = [];
-  List<model_workout.Workout> workouts = [];
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    debugPrint('🚀 HomeScreen initState chamado');
     loadWorkoutPlans();
-    loadWorkouts();
   }
 
   Future<void> loadWorkoutPlans() async {
-    debugPrint('📋 Carregando planos de treino...');
     try {
-      final plans = await dbHelper.getWorkoutPlans();
-      debugPrint('📊 Total de planos carregados: ${plans.length}');
-      
-      // Log detalhado de cada plano
-      for (int i = 0; i < plans.length; i++) {
-        final plan = plans[i];
-        debugPrint('📝 Plano $i: ${plan.dayOfWeek} - Tipos: ${plan.workoutTypes} - ID: ${plan.id} - Notas: ${plan.notes}');
+      final loaded = await dbHelper.getWorkoutPlans();
+      debugPrint('📋 WorkoutPlans carregados: ${loaded.length}');
+      for (var plan in loaded) {
+        debugPrint('  - ${plan.dayOfWeek}: ${plan.workoutTypes.join(', ')}');
       }
-      
+      if (!mounted) return;
       setState(() {
-        workoutPlans = plans;
-        isLoading = false;
-      });
-      
-      debugPrint('✅ Estado atualizado - workoutPlans.length: ${workoutPlans.length}');
-    } catch (e) {
-      debugPrint('❌ Erro ao carregar planos de treino: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> loadWorkouts() async {
-    try {
-      final loadedWorkouts = await dbHelper.getWorkouts();
-      setState(() {
-        workouts = loadedWorkouts;
+        workoutPlans = loaded;
       });
     } catch (e) {
-      debugPrint('Erro ao carregar workouts: $e');
+      debugPrint('❌ Erro ao carregar WorkoutPlans: $e');
     }
   }
 
@@ -71,60 +42,62 @@ class _HomeScreenState extends State<HomeScreen> {
         return Icons.fitness_center;
       case 'costas':
         return Icons.accessibility_new;
-      case 'pernas':
+      case 'bíceps':
+        return Icons.fitness_center;
+      case 'tríceps':
+        return Icons.fitness_center;
+      case 'perna':
         return Icons.directions_run;
-      case 'ombros':
-        return Icons.sports_gymnastics;
-      case 'braços':
-        return Icons.sports_handball;
-      case 'cardio':
-        return Icons.favorite;
+      case 'ombro':
+        return Icons.accessibility_new;
+      case 'abdômen':
+        return Icons.fitness_center;
+      case 'descanso':
+        return Icons.bedtime;
       default:
         return Icons.fitness_center;
     }
   }
 
   void _showEditWorkoutDialog(WorkoutPlan plan) {
-    List<String> availableTypes = [
+    final List<String> workoutTypes = List.from(plan.workoutTypes);
+    final List<String> availableTypes = [
       'Peito',
       'Costas',
-      'Pernas',
-      'Ombros',
-      'Braços',
-      'Cardio'
+      'Bíceps',
+      'Tríceps',
+      'Perna',
+      'Ombro',
+      'Abdômen',
+      'Descanso',
     ];
-    List<String> workoutTypes = List.from(plan.workoutTypes);
 
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text('Editar ${plan.dayOfWeek}'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Selecione os tipos de treino:'),
-                  const SizedBox(height: 16),
-                  ...availableTypes.map((type) {
+              title: Text('Editar Treinos para ${plan.dayOfWeek}'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: availableTypes.map((type) {
+                    final isSelected = workoutTypes.contains(type);
                     return CheckboxListTile(
                       title: Text(type),
-                      value: workoutTypes.contains(type),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            if (!workoutTypes.contains(type)) {
-                              workoutTypes.add(type);
-                            }
+                      value: isSelected,
+                      onChanged: (bool? newValue) {
+                        setDialogState(() {
+                          if (newValue!) {
+                            workoutTypes.add(type);
                           } else {
                             workoutTypes.remove(type);
                           }
                         });
                       },
                     );
-                  }),
-                ],
+                  }).toList(),
+                ),
               ),
               actions: <Widget>[
                 TextButton(
@@ -136,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    // Atualizar o plano no banco de dados
                     if (plan.id != null) {
                       dbHelper.updateWorkoutPlan(plan.id!, workoutTypes);
                       if (mounted) loadWorkoutPlans();
@@ -153,8 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🎨 Build chamado - workoutPlans.length: ${workoutPlans.length}');
-    
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -169,72 +141,17 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const screen_workout_detail.WorkoutDetailScreen(
-                    workout: null,
-                  ),
-                ),
-              );
-              if (result is model_workout.Workout) {
-                await firestoreHelper.addWorkout(result);
-                await dbHelper.insertWorkout(result);
-                if (mounted) loadWorkouts();
-              }
-            },
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: loadWorkoutPlans,
         child: workoutPlans.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.fitness_center,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Nenhum treino encontrado',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Total de planos: ${workoutPlans.length}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        debugPrint('🔄 Botão recarregar pressionado');
-                        loadWorkoutPlans();
-                      },
-                      child: const Text('Recarregar'),
-                    ),
-                  ],
-                ),
+            ? const Center(
+                child: CircularProgressIndicator(),
               )
             : ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 itemCount: workoutPlans.length,
                 itemBuilder: (context, index) {
-                  debugPrint('🎯 Renderizando item $index: ${workoutPlans[index].dayOfWeek}');
                   final plan = workoutPlans[index];
                   return Card(
                     elevation: 2,

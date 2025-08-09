@@ -22,9 +22,9 @@ class ExerciseDetailsDialog extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Descrição: ${exercise.description}'),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Instruções:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(exercise.instructions),
@@ -35,9 +35,9 @@ class ExerciseDetailsDialog extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Configuração:',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   if (exercise.sets != null) Text('Séries: ${exercise.sets}'),

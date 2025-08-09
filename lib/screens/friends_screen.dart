@@ -15,7 +15,6 @@ class _FriendsScreenState extends State<FriendsScreen> {
   List<app_user.User> _friends = [];
   List<app_user.User> _searchResults = [];
   final bool _isLoading = false;
-  final bool _isSearching = false;
 
   @override
   void initState() {
@@ -249,11 +248,11 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     ),
                     child: TextField(
                       controller: _searchController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Buscar usuários...',
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: Icon(Icons.search),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),

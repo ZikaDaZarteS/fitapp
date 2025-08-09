@@ -159,22 +159,22 @@ class _ExerciseManagementScreenState extends State<ExerciseManagementScreen> wit
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : exercises.isEmpty
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.fitness_center,
                     size: 64,
                     color: Colors.grey,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Nenhum exercício adicionado',
                     style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Toque no + para adicionar exercícios',
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),

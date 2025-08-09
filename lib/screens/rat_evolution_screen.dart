@@ -362,16 +362,16 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                         ),
                       ],
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.auto_awesome,
                           color: Colors.white,
                           size: 20,
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           'Animar Evolução',
                           style: TextStyle(
                             color: Colors.white,

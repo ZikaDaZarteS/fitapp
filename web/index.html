@@ -19,10 +19,30 @@
   <title>fitapp</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- ✅ Firebase SDKs para Flutter Web -->
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js"></script>
+  <!-- Google Sign-In SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- Firebase SDKs para Flutter Web - Versão compatível -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+    
+    window.firebaseConfig = {
+      apiKey: "AIzaSyBvOkBig6wbLZieoHqfHTpyDA2KjPEzjdI",
+      authDomain: "fitapp-e7140.firebaseapp.com",
+      projectId: "fitapp-e7140",
+      storageBucket: "fitapp-e7140.firebasestorage.app",
+      messagingSenderId: "1052036944086",
+      appId: "1:1052036944086:web:4f0c8b1c8e2a1b2c3d4e5f",
+      measurementId: "G-XXXXXXXXXX"
+    };
+    
+    const app = initializeApp(window.firebaseConfig);
+    window.firebaseApp = app;
+    window.firebaseAuth = getAuth(app);
+    window.firebaseFirestore = getFirestore(app);
+  </script>
 
 </head>
 <body>

@@ -108,23 +108,45 @@ class AuthController {
     try {
       onLoadingChanged();
 
-      // Verificar se o Google Sign-In está disponível
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+      debugPrint('🔄 Iniciando login com Google...');
 
-      // Verificar se o usuário já está logado
+      // Verificar se o Google Sign-In está disponível
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+
+      debugPrint('🔄 Fazendo sign out preventivo...');
+      await googleSignIn.signOut();
+
+      debugPrint('🔄 Iniciando processo de login...');
       final GoogleSignInAccount? currentUser = await googleSignIn.signIn();
 
       if (currentUser == null) {
-        // Usuário cancelou o login
+        debugPrint('ℹ️ Usuário cancelou o login');
         if (context.mounted) {
           onLoadingChanged();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login cancelado pelo usuário'),
+              backgroundColor: Colors.orange,
+            ),
+          );
         }
         return;
       }
 
+      debugPrint('✅ Usuário selecionado: ${currentUser.email}');
+
       // Obter as credenciais de autenticação
+      debugPrint('🔄 Obtendo credenciais de autenticação...');
       final GoogleSignInAuthentication googleAuth =
           await currentUser.authentication;
+
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        throw Exception('Falha ao obter tokens de autenticação do Google');
+      }
+
+      debugPrint('✅ Tokens obtidos com sucesso');
 
       // Criar credenciais do Firebase
       final credential = fb_auth.GoogleAuthProvider.credential(
@@ -132,6 +154,7 @@ class AuthController {
         idToken: googleAuth.idToken,
       );
 
+      debugPrint('🔄 Fazendo login no Firebase...');
       // Fazer login no Firebase
       final fb_auth.UserCredential userCredential = await fb_auth
           .FirebaseAuth
@@ -155,14 +178,53 @@ class AuthController {
         context,
         MaterialPageRoute(builder: (_) => const MainMenuScreen()),
       );
+    } on fb_auth.FirebaseAuthException catch (e) {
+      debugPrint('❌ Erro Firebase Auth: ${e.code} - ${e.message}');
+      
+      if (!context.mounted) return;
+      
+      String errorMessage = 'Erro na autenticação Firebase';
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          errorMessage = 'Esta conta já existe com credenciais diferentes';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'Credenciais inválidas';
+          break;
+        case 'operation-not-allowed':
+          errorMessage = 'Login com Google não está habilitado';
+          break;
+        case 'user-disabled':
+          errorMessage = 'Esta conta foi desabilitada';
+          break;
+        default:
+          errorMessage = 'Erro no Firebase: ${e.message}';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
       debugPrint('❌ Erro no login com Google: $e');
+      debugPrint('❌ Tipo do erro: ${e.runtimeType}');
 
       if (!context.mounted) return;
 
+      String errorMessage = 'Erro no login com Google';
+      if (e.toString().contains('network')) {
+        errorMessage = 'Erro de conexão. Verifique sua internet.';
+      } else if (e.toString().contains('configuration')) {
+        errorMessage = 'Erro de configuração. Entre em contato com o suporte.';
+      } else {
+        errorMessage = 'Erro inesperado: ${e.toString()}';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro no login com Google: $e'),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );

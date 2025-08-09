@@ -108,7 +108,7 @@ class RatEvolution {
         imagePath: 'assets/images/rat_6.jpg',
       );
     } else {
-      return RatEvolution(
+      return const RatEvolution(
         stage: RatStage.god,
         name: 'Rato Divino',
         description: 'Rato divino, transcendendo os limites mortais!',

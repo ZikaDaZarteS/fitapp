@@ -293,7 +293,7 @@ class _MoreScreenState extends State<_MoreScreen> {
                   // Botão de configurações
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
@@ -426,45 +426,94 @@ class _MoreScreenState extends State<_MoreScreen> {
                     description: 'Encerrar sessão e sair do aplicativo',
                     onTap: () async {
                       debugPrint('🔄 Botão Sair pressionado');
+                      
+                      // Mostrar diálogo de confirmação
+                      final bool? shouldLogout = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Confirmar Saída'),
+                            content: const Text('Tem certeza que deseja sair do aplicativo?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: const Text('Sair'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      
+                      if (shouldLogout != true) {
+                        debugPrint('ℹ️ Logout cancelado pelo usuário');
+                        return;
+                      }
+                      
                       try {
                         // Mostrar loading
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Saindo...'),
-                            backgroundColor: Colors.blue,
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Saindo...'),
+                              backgroundColor: Colors.blue,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
 
                         debugPrint('🔥 Fazendo logout do Firebase...');
-                        // Fazer logout do Firebase
-                        await FirebaseAuth.instance.signOut();
-                        debugPrint('✅ Logout do Firebase realizado');
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          debugPrint('✅ Logout do Firebase realizado');
+                        } catch (firebaseError) {
+                          debugPrint('⚠️ Erro no logout do Firebase (continuando): $firebaseError');
+                        }
 
                         if (!context.mounted) return;
 
                         debugPrint('🗄️ Limpando dados locais...');
-                        // Limpar dados locais
-                        final db = DatabaseHelper();
-                        await db.clearUser();
-                        debugPrint('✅ Dados locais limpos');
+                        try {
+                          final db = DatabaseHelper();
+                          final result = await db.clearUser();
+                          debugPrint('✅ Dados locais limpos (resultado: $result)');
+                        } catch (dbError) {
+                          debugPrint('⚠️ Erro ao limpar dados locais (continuando): $dbError');
+                        }
 
                         if (!context.mounted) return;
 
                         debugPrint('🔄 Navegando para tela de login...');
                         // Navegar para login e limpar stack
-                        Navigator.of(
-                          context,
-                        ).pushNamedAndRemoveUntil('/login', (route) => false);
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/login', 
+                          (route) => false,
+                        );
                         debugPrint('✅ Navegação concluída');
+                        
+                        // Mostrar mensagem de sucesso
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Logout realizado com sucesso!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
                       } catch (e) {
                         debugPrint('❌ Erro ao sair: $e');
+                        debugPrint('❌ Stack trace: ${StackTrace.current}');
+                        
                         if (!context.mounted) return;
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Erro ao sair: $e'),
+                            content: Text('Erro ao sair: ${e.toString()}'),
                             backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
                           ),
                         );
                       }

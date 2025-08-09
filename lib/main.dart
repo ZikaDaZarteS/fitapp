@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'firebase_options.dart';
 import 'package:fitapp/db/database_helper.dart' as db_helper;
@@ -12,6 +15,13 @@ import 'package:fitapp/screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar sqflite para web
+  if (kIsWeb) {
+    debugPrint('🌐 Inicializando sqflite para web...');
+    databaseFactory = databaseFactoryFfiWeb;
+    debugPrint('✅ sqflite para web inicializado');
+  }
 
   try {
     debugPrint('🚀 Iniciando Firebase...');
@@ -75,14 +85,14 @@ class _MyAppState extends State<MyApp> {
           await db.upsertUser(
             local_user.User(
               id: firebaseUser.uid,
-              name: '',
+              name: firebaseUser.displayName ?? 'Usuário',
               email: firebaseUser.email ?? '',
               height: 0,
               weight: 0,
               age: 0,
             ),
           );
-          debugPrint('📥 Usuário salvo localmente via Firebase');
+          debugPrint('📥 Usuário salvo localmente via Firebase: ${firebaseUser.displayName}');
           return const MainMenuScreen();
         }
       } catch (e) {
@@ -103,24 +113,17 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
       ),
-      initialRoute: '/',
       home: FutureBuilder<Widget>(
         future: _decideStartScreen(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Scaffold(
-                body: Center(
-                  child: Text('Erro ao carregar o app: ${snapshot.error}'),
-                ),
-              );
-            }
-            return snapshot.data ?? const LoginScreen();
-          } else {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           }
+          return snapshot.data ?? const LoginScreen();
         },
       ),
       routes: {

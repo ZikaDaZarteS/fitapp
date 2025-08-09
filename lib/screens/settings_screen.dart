@@ -3,8 +3,8 @@ import 'package:fitapp/db/database_helper.dart';
 import 'package:fitapp/models/user.dart' as app_user;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -315,7 +315,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: 'Gerenciar alertas e lembretes',
               icon: Icons.notifications_outlined,
               onTap: () {
-                // Implementar configurações de notificação
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationSettingsScreen(),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 8),
@@ -463,19 +468,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () async {
               final newValue = controller.text.trim();
               if (newValue.isNotEmpty) {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 await onSave(newValue);
                 if (mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  navigator.pop();
+                  messenger.showSnackBar(
                     SnackBar(content: Text('$title atualizado com sucesso!')),
                   );
                 }
               } else {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$title não pode estar vazio!')),
-                  );
-                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$title não pode estar vazio!')),
+                );
               }
             },
             child: const Text('Salvar'),
