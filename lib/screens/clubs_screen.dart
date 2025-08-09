@@ -8,6 +8,8 @@ class ClubsScreen extends StatefulWidget {
 }
 
 class _ClubsScreenState extends State<ClubsScreen> {
+  List<Map<String, dynamic>> activeChallenges = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +22,7 @@ class _ClubsScreenState extends State<ClubsScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          'Rat Pack',
+          'Arena dos Campeões',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -112,26 +114,46 @@ class _ClubsScreenState extends State<ClubsScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildClubCard(
-            'Marombas e Marombinhas',
-            'Brasil',
-            '582 membros',
-            'Dias ativos',
-            Icons.fitness_center,
-            Colors.red,
-            'GymRats',
-            'assets/images/dumbbells_bg.jpg',
+          GestureDetector(
+            onTap: () => _showClubDetails(
+              'Elite Fitness Pro',
+              'O clube mais exclusivo para atletas de elite. Aqui você compete com os melhores e conquista recompensas incríveis.',
+              'Sistema de Pontuação:\n• Treino completo: 100 pontos\n• Check-in diário: 50 pontos\n• Desafio concluído: 200 pontos\n• Streak de 7 dias: 500 pontos\n\nBenefícios Pro:\n• Acesso a treinos exclusivos\n• Coaching personalizado\n• Ranking global\n• Recompensas premium',
+              '1.2k membros',
+              Icons.star,
+              Colors.purple,
+            ),
+            child: _buildClubCard(
+              'Elite Fitness Pro',
+              'Global',
+              '1.2k membros',
+              'Pontos de Elite',
+              Icons.star,
+              Colors.purple,
+              'PRO',
+              'assets/images/dumbbells_bg.jpg',
+            ),
           ),
           const SizedBox(width: 16),
-          _buildClubCard(
-            'TransformaMent',
-            'Brasil',
-            '240 membros',
-            'Pontos de humor',
-            Icons.psychology,
-            Colors.pink,
-            'Transform',
-            'assets/images/dumbbells_bg.jpg',
+          GestureDetector(
+            onTap: () => _showClubDetails(
+              'Legends Academy',
+              'Para verdadeiras lendas do fitness. Transforme-se em uma lenda através de desafios épicos e conquistas extraordinárias.',
+              'Sistema de Pontuação:\n• Treino intenso: 150 pontos\n• Meta semanal: 300 pontos\n• Desafio lendário: 500 pontos\n• Conquista épica: 1000 pontos\n\nBenefícios Pro:\n• Treinos de lendas\n• Mentoria exclusiva\n• Certificados digitais\n• Comunidade VIP',
+              '850 membros',
+              Icons.emoji_events,
+              Colors.orange,
+            ),
+            child: _buildClubCard(
+              'Legends Academy',
+              'Global',
+              '850 membros',
+              'Pontos Lendários',
+              Icons.emoji_events,
+              Colors.orange,
+              'LEGEND',
+              'assets/images/dumbbells_bg.jpg',
+            ),
           ),
         ],
       ),
@@ -139,33 +161,52 @@ class _ClubsScreenState extends State<ClubsScreen> {
   }
 
   Widget _buildActiveChallengesSection() {
+    List<Widget> challengeWidgets = [
+      _buildChallengeCard(
+        'Desafio 30 Dias Transformação',
+        'FitApp',
+        'Global',
+        '1.5k membros',
+        'Dias ativos - 10 pontos/dia',
+        Icons.calendar_today,
+        Colors.blue,
+        'assets/images/dumbbells_bg.jpg',
+      ),
+      const SizedBox(width: 16),
+      _buildChallengeCard(
+        'Queima 10k Calorias',
+        'FitApp',
+        'Global',
+        '892 membros',
+        'Calorias - 1 ponto/10 cal',
+        Icons.local_fire_department,
+        Colors.red,
+        'assets/images/dumbbells_bg.jpg',
+      ),
+    ];
+
+    // Adicionar desafios criados pelo usuário
+    for (var challenge in activeChallenges) {
+      challengeWidgets.add(const SizedBox(width: 16));
+      challengeWidgets.add(
+        _buildChallengeCard(
+          challenge['name'],
+          'Você',
+          'Personalizado',
+          '1 membro',
+          '${challenge['type']} - ${challenge['description']}',
+          Icons.emoji_events,
+          Colors.green,
+          'assets/images/dumbbells_bg.jpg',
+        ),
+      );
+    }
+
     return SizedBox(
       height: 280,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: [
-          _buildChallengeCard(
-            '184 treinos para o final de',
-            'Patricia',
-            'Montes Claros',
-            '169 membros',
-            'Dias ativos',
-            Icons.calendar_today,
-            Colors.blue,
-            'assets/images/dumbbells_bg.jpg',
-          ),
-          const SizedBox(width: 16),
-          _buildChallengeCard(
-            'GayRats',
-            'Lino',
-            'Brasil',
-            '20 membros',
-            'Dias ativos',
-            Icons.calendar_today,
-            Colors.orange,
-            'assets/images/dumbbells_bg.jpg',
-          ),
-        ],
+        children: challengeWidgets,
       ),
     );
   }
@@ -669,10 +710,22 @@ class _ClubsScreenState extends State<ClubsScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (nameController.text.isNotEmpty && durationController.text.isNotEmpty) {
+                      // Adicionar o desafio à lista de desafios ativos
+                      setState(() {
+                        activeChallenges.add({
+                          'name': nameController.text,
+                          'description': descriptionController.text.isEmpty 
+                              ? 'Desafio personalizado' 
+                              : descriptionController.text,
+                          'duration': durationController.text,
+                          'type': selectedType,
+                        });
+                      });
+                      
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Desafio "${nameController.text}" criado com sucesso!'),
+                          content: Text('Desafio "${nameController.text}" criado e adicionado aos desafios ativos!'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -687,6 +740,165 @@ class _ClubsScreenState extends State<ClubsScreen> {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showClubDetails(
+    String clubName,
+    String description,
+    String pointingSystem,
+    String members,
+    IconData icon,
+    Color color,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(icon, color: color, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  clubName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Informações básicas
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: color.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.group, color: color, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        members,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'PRO ONLY',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Descrição
+                Text(
+                  'Sobre o Clube',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Sistema de pontuação
+                Text(
+                  'Sistema de Pontuação e Benefícios',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                  ),
+                  child: Text(
+                    pointingSystem,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Fechar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Você precisa do FitApp Pro para entrar no $clubName!'),
+                    backgroundColor: color,
+                    action: SnackBarAction(
+                      label: 'UPGRADE',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        // Navegar para tela de assinatura
+                      },
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Entrar no Clube'),
+            ),
+          ],
         );
       },
     );
