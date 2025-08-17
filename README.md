@@ -26,8 +26,14 @@ Um aplicativo Flutter completo de fitness com sistema de gamificação, autentic
 
 ### Sistema de Evolução (Gamificação)
 - **Rato Gamificado**: Sistema único de evolução baseado em pontos
-- 6 estágios de evolução: Bebê → Jovem → Adulto → Forte → Épico → Lendário
-- Pontuação baseada em check-ins e atividades de treino
+- 7 estágios de evolução: Bebê (0-99) → Jovem (100-299) → Adulto (300-599) → Guerreiro (600-999) → Campeão (1000-1499) → Lendário (1500-2499) → Divino (2500+)
+- **Pontuação diretamente ligada à evolução**: Cada ponto ganho faz o rato evoluir automaticamente
+- Sistema de pontos por atividade:
+  - Check-ins diários: pontos variáveis
+  - Treino intenso: 150 pontos (clubes Pro)
+  - Meta semanal: 300 pontos (clubes Pro)
+  - Desafio lendário: 500 pontos (clubes Pro)
+  - Conquista épica: 1000 pontos (clubes Pro)
 - Visualização 3D do rato em diferentes estágios
 - Sistema de conquistas e marcos
 - Animações e feedback visual
@@ -35,7 +41,16 @@ Um aplicativo Flutter completo de fitness com sistema de gamificação, autentic
 ### Funcionalidades Sociais
 - Sistema de amigos e busca de usuários
 - Ranking global de usuários por pontos
-- Clubes e grupos de treino
+- **Arena dos Campeões**: Interface moderna para clubes
+- **Clubes Premium** (exclusivos para usuários Pro):
+  - **Elite Fitness Pro**: Clube dourado para atletas de elite
+  - **Legends Academy**: Clube roxo para lendas do fitness
+  - Sistema de pontuação específico por clube
+  - Benefícios exclusivos (em desenvolvimento):
+    - Treinos de lendas
+    - Mentoria exclusiva
+    - Certificados digitais
+    - Comunidade VIP
 - Compartilhamento de progresso e conquistas
 - Perfis de usuário personalizáveis
 

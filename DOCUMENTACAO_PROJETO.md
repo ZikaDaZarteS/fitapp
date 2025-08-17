@@ -40,7 +40,7 @@ O FitApp é um aplicativo Flutter de fitness completo que permite aos usuários 
 - `lib/models/exercise.dart` - Modelo de exercício com categorias e detalhes
 - `lib/models/workout.dart` - Modelo de treino
 - `lib/models/checkin.dart` - Modelo de check-in com pontuação
-- `lib/models/rat_evolution.dart` (152 linhas) - Sistema de evolução do rato com 6 estágios
+- `lib/models/rat_evolution.dart` (152 linhas) - Sistema de evolução do rato com 7 estágios
 - `lib/models/workout_plan.dart` - Modelo de plano de treino
 
 #### Controladores (lib/controllers/)
@@ -475,12 +475,29 @@ Model Layer (User, Exercise, Workout, etc.)
 ✅ Navegação por abas
 ✅ Check-ins e estatísticas
 
+### Funcionalidades Sociais
+- Sistema de amigos e busca de usuários
+- Ranking global de usuários por pontos
+- **Clubes Premium**: Sistema de clubes exclusivos para usuários Pro
+  - **Elite Fitness Pro**: Clube para atletas de elite (dourado)
+  - **Legends Academy**: Academia para lendas do fitness (roxo)
+  - Sistema de pontuação específico por clube
+  - Benefícios exclusivos (treinos de lendas, mentoria, certificados)
+- Compartilhamento de progresso e conquistas
+- Perfis de usuário personalizáveis
+- **Arena dos Campeões**: Nova interface de clubes com design moderno
+
 ### Funcionalidades Parciais
 🔄 Integração com smartwatch (tela criada)
 🔄 Sistema de amigos (estrutura básica)
 🔄 Clubes e ranking (interfaces criadas)
 🔄 Notificações (dependência comentada)
 🔄 Integração com Health (dependência comentada)
+🔄 **Benefícios dos Clubes**: Interface criada, mas benefícios ainda não funcionais
+  - Treinos de lendas: Não implementado
+  - Mentoria exclusiva: Não implementado
+  - Certificados digitais: Não implementado
+  - Comunidade VIP: Não implementado
 
 ### Pontos de Atenção
 ⚠️ Algumas dependências comentadas por compatibilidade
