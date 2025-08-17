@@ -37,6 +37,10 @@ dependencies:
   # Social Login
   google_sign_in: ^6.2.1
 
+  # Renderização de modelos 3D
+  model_viewer_plus: ^1.7.2
+  flutter_cube: ^0.1.1
+
   # SVG Support
   flutter_svg: ^2.0.9
 
@@ -74,3 +78,5 @@ flutter:
     - assets/images/rat_5.jpg
     - assets/images/rat_6.jpg
     - assets/animations/
+    - assets/models/meu_modelo.glb
+    

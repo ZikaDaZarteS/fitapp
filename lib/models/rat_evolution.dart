@@ -20,6 +20,7 @@ class RatEvolution {
   final int maxPoints;
   final double evolutionProgress;
   final String imagePath;
+  final String? modelPath; // Caminho para o modelo 3D (opcional)
 
   const RatEvolution({
     required this.stage,
@@ -31,6 +32,7 @@ class RatEvolution {
     required this.maxPoints,
     required this.evolutionProgress,
     required this.imagePath,
+    this.modelPath, // Modelo 3D opcional
   });
 
   static RatEvolution getEvolutionStage(int points) {
@@ -58,6 +60,7 @@ class RatEvolution {
         maxPoints: 300,
         evolutionProgress: (points - 100) / 200,
         imagePath: 'assets/images/rat_2.jpg',
+        modelPath: 'assets/models/meu_modelo.obj',
       );
     } else if (points >= 300 && points < 600) {
       return RatEvolution(
@@ -69,7 +72,8 @@ class RatEvolution {
         minPoints: 300,
         maxPoints: 600,
         evolutionProgress: (points - 300) / 300,
-        imagePath: 'assets/images/rat_3.jpg',
+        imagePath: 'assets/models/meu_modelo.glb',
+        modelPath: 'assets/models/meu_modelo.glb',
       );
     } else if (points >= 600 && points < 1000) {
       return RatEvolution(

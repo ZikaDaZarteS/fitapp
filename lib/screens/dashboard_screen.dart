@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/checkin.dart';
 import '../models/rat_evolution.dart';
+import '../widgets/dashboard_rat_section.dart';
+import '../widgets/dashboard_stat_card.dart';
+import '../widgets/dashboard_navigation_card.dart';
+import '../widgets/cycling_options_modal.dart';
+import '../widgets/running_options_modal.dart';
 import 'clubs_screen.dart';
 import 'scoring_mode_screen.dart';
 import 'rat_evolution_screen.dart';
 import 'checkin_screen.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -73,7 +79,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 20),
 
                     // Seção do Rato Atual
-                    _buildCurrentRatSection(),
+                    DashboardRatSection(
+                      currentEvolution: _currentEvolution,
+                      userPoints: _userPoints,
+                    ),
 
                     const SizedBox(height: 30),
 
@@ -81,20 +90,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: _buildStatCard(
-                            'Check-ins',
-                            '$_totalCheckins',
-                            Icons.fitness_center,
-                            const Color(0xFF4CAF50),
+                          child: DashboardStatCard(
+                            title: 'Check-ins',
+                            value: '$_totalCheckins',
+                            icon: Icons.fitness_center,
+                            color: const Color(0xFF4CAF50),
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: _buildStatCard(
-                            'Dias Ativos',
-                            '${_calculateActiveDays()}',
-                            Icons.calendar_today,
-                            const Color(0xFF2196F3),
+                          child: DashboardStatCard(
+                            title: 'Dias Ativos',
+                            value: '${_calculateActiveDays()}',
+                            icon: Icons.calendar_today,
+                            color: const Color(0xFF2196F3),
                           ),
                         ),
                       ],
@@ -142,48 +151,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisSpacing: 16,
                       childAspectRatio: 1.3,
                       children: [
-                        _buildNavigationCard(
-                          'Check-in',
-                          'Registre seu treino',
-                          Icons.fitness_center,
-                          const Color(0xFF4CAF50),
-                          () => Navigator.push(
+                        DashboardNavigationCard(
+                          title: 'Check-in',
+                          description: 'Registre seu treino',
+                          icon: Icons.fitness_center,
+                          color: const Color(0xFF4CAF50),
+                          onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const CheckinScreen(),
                             ),
                           ),
                         ),
-                        _buildNavigationCard(
-                          'Clubes',
-                          'Explore a comunidade',
-                          Icons.group,
-                          const Color(0xFF2196F3),
-                          () => Navigator.push(
+                        DashboardNavigationCard(
+                          title: 'Clubes',
+                          description: 'Explore a comunidade',
+                          icon: Icons.group,
+                          color: const Color(0xFF2196F3),
+                          onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const ClubsScreen(),
                             ),
                           ),
                         ),
-                        _buildNavigationCard(
-                          'Criar',
-                          'Grupo ou Desafio',
-                          Icons.add_circle,
-                          const Color(0xFFFF9800),
-                          () => Navigator.push(
+                        DashboardNavigationCard(
+                          title: 'Ciclismo',
+                          description: 'Recursos para bike',
+                          icon: Icons.directions_bike,
+                          color: const Color(0xFF00BCD4),
+                          onTap: () => CyclingOptionsModal.show(context),
+                        ),
+                        DashboardNavigationCard(
+                          title: 'Corrida',
+                          description: 'Recursos para corrida',
+                          icon: Icons.directions_run,
+                          color: const Color(0xFFE91E63),
+                          onTap: () => RunningOptionsModal.show(context),
+                        ),
+                        DashboardNavigationCard(
+                          title: 'Criar',
+                          description: 'Grupo ou Desafio',
+                          icon: Icons.add_circle,
+                          color: const Color(0xFFFF9800),
+                          onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const ScoringModeScreen(),
                             ),
                           ),
                         ),
-                        _buildNavigationCard(
-                          'Evolução',
-                          'Veja seu rato',
-                          Icons.psychology,
-                          const Color(0xFF9C27B0),
-                          () => Navigator.push(
+                        DashboardNavigationCard(
+                          title: 'Evolução',
+                          description: 'Veja seu rato',
+                          icon: Icons.psychology,
+                          color: const Color(0xFF9C27B0),
+                          onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const RatEvolutionScreen(),
@@ -199,157 +222,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildCurrentRatSection() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            _currentEvolution.color.withValues(alpha: 0.1),
-            _currentEvolution.color.withValues(alpha: 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _currentEvolution.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: _currentEvolution.color,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _currentEvolution.description,
-                      style: const TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: _currentEvolution.color,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$_userPoints pontos',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: _currentEvolution.color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
-                  child: Image.asset(
-                    _currentEvolution.imagePath,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        child: const Icon(
-                          Icons.error,
-                          color: Colors.grey,
-                          size: 30,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(title, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-        ],
-      ),
-    );
-  }
+
+
 
   Widget _buildCheckinButton() {
     return Container(
@@ -400,69 +275,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildNavigationCard(
-    String title,
-    String description,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+
 
   void _performCheckin() async {
     try {
@@ -494,4 +307,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
     }
   }
+
+
+
+
+
+
+
+
 }

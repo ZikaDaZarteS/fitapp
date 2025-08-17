@@ -12,6 +12,7 @@ import 'package:fitapp/models/user.dart' as local_user;
 import 'package:fitapp/screens/login_screen.dart';
 import 'package:fitapp/screens/main_menu_screen.dart';
 import 'package:fitapp/screens/onboarding_screen.dart';
+import 'package:fitapp/screens/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -130,6 +131,7 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => const LoginScreen(),
         '/main': (context) => const MainMenuScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }

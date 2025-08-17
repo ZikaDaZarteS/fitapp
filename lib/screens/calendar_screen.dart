@@ -106,6 +106,71 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 return isSameDay(_selectedDay, day);
               },
               eventLoader: _getEventsForDay,
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, day, events) {
+                  if (events.isNotEmpty) {
+                    final checkin = events.first as Checkin;
+                    if (checkin.imagePath != null) {
+                      return Positioned(
+                        bottom: 1,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: kIsWeb
+                                ? Image.network(
+                                    checkin.imagePath!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.green,
+                                        child: const Icon(
+                                          Icons.fitness_center,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Image.file(
+                                    File(checkin.imagePath!),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.green,
+                                        child: const Icon(
+                                          Icons.fitness_center,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Positioned(
+                        bottom: 1,
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return null;
+                },
+              ),
               onDaySelected: (selectedDay, focusedDay) {
                 setState(() {
                   _selectedDay = selectedDay;
@@ -133,7 +198,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                markersMaxCount: 3,
+                markersMaxCount: 1,
+                markerSize: 6,
               ),
               headerStyle: const HeaderStyle(
                 formatButtonVisible: true,

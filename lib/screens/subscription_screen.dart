@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -348,6 +349,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
+  Future<void> _activateProFeatures() async {
+    // Simular ativação dos recursos Pro
+    // Salvar o status Pro no SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('fitapp_pro_active', true);
+    await prefs.setString('fitapp_pro_plan', _selectedPlan);
+    await prefs.setString('fitapp_pro_activation_date', DateTime.now().toIso8601String());
+  }
+
   void _confirmSubscription() {
     final planName = _selectedPlan == 'annual' ? 'Anual' : 'Mensal';
     final price = _selectedPlan == 'annual'
@@ -366,14 +376,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Assinatura $planName confirmada!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                // Simular ativação do Pro
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                await _activateProFeatures();
+                if (mounted) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text('🎉 Assinatura $planName confirmada! FitApp Pro ativado com sucesso!'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 4),
+                      action: SnackBarAction(
+                        label: 'Ver Clubes Pro',
+                        textColor: Colors.white,
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Voltar da tela de assinatura
+                          // Navegar para clubes
+                        },
+                      ),
+                    ),
+                  );
+                }
               },
               child: const Text('Confirmar'),
             ),
@@ -389,13 +413,38 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Restaurar Compra'),
-          content: const Text(
-            'Esta funcionalidade permite restaurar compras anteriores.',
+          content: const SingleChildScrollView(
+            child: Text(
+              'Restaurar Compras\n\n'
+              'Se você já adquiriu uma assinatura Pro anteriormente e não consegue acessar os recursos premium, use esta opção para restaurar sua compra.\n\n'
+              'Como funciona:\n'
+              '• Conecte-se à mesma conta (Google Play/App Store) usada na compra original\n'
+              '• Toque em "Restaurar" e aguarde a verificação\n'
+              '• Seus recursos premium serão reativados automaticamente\n\n'
+              'Problemas comuns:\n'
+              '• Verifique se está usando a mesma conta da compra\n'
+              '• Certifique-se de ter conexão com a internet\n'
+              '• Aguarde alguns minutos para sincronização\n\n'
+              'Se o problema persistir, entre em contato com nosso suporte através do email: suporte@fitapp.com',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Aqui seria implementada a lógica real de restauração
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Verificando compras anteriores...'),
+                    backgroundColor: Colors.blue,
+                  ),
+                );
+              },
+              child: const Text('Restaurar'),
             ),
           ],
         );
@@ -409,13 +458,44 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Termos de Uso'),
-          content: const Text(
-            'Aqui você pode visualizar os termos de uso do aplicativo.',
+          content: const SingleChildScrollView(
+            child: Text(
+              'TERMOS DE USO - FITAPP\n\n'
+              '1. ACEITAÇÃO DOS TERMOS\n'
+              'Ao utilizar o FitApp, você concorda com estes termos de uso. Se não concordar, não utilize o aplicativo.\n\n'
+              '2. DESCRIÇÃO DO SERVIÇO\n'
+              'O FitApp é uma plataforma de fitness que oferece:\n'
+              '• Sistema de check-ins e acompanhamento de treinos\n'
+              '• Gamificação com evolução de personagem\n'
+              '• Recursos sociais e clubes\n'
+              '• Funcionalidades premium mediante assinatura\n\n'
+              '3. CONTA DO USUÁRIO\n'
+              '• Você é responsável por manter a segurança de sua conta\n'
+              '• Não compartilhe suas credenciais de acesso\n'
+              '• Notifique-nos imediatamente sobre uso não autorizado\n\n'
+              '4. ASSINATURA PRO\n'
+              '• A assinatura Pro oferece recursos adicionais\n'
+              '• Renovação automática conforme plano escolhido\n'
+              '• Cancelamento pode ser feito a qualquer momento\n'
+              '• Reembolsos seguem políticas da loja de aplicativos\n\n'
+              '5. CONTEÚDO DO USUÁRIO\n'
+              '• Você mantém direitos sobre o conteúdo que publica\n'
+              '• Concede-nos licença para usar o conteúdo no app\n'
+              '• Não publique conteúdo ofensivo ou inadequado\n\n'
+              '6. LIMITAÇÃO DE RESPONSABILIDADE\n'
+              '• O app é fornecido "como está"\n'
+              '• Não garantimos disponibilidade ininterrupta\n'
+              '• Use por sua conta e risco\n\n'
+              '7. MODIFICAÇÕES\n'
+              'Podemos alterar estes termos a qualquer momento. Continuação do uso implica aceitação das mudanças.\n\n'
+              'Última atualização: Janeiro 2024\n'
+              'Contato: legal@fitapp.com',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: const Text('Fechar'),
             ),
           ],
         );
@@ -429,13 +509,56 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Política de Privacidade'),
-          content: const Text(
-            'Aqui você pode visualizar a política de privacidade do aplicativo.',
+          content: const SingleChildScrollView(
+            child: Text(
+              'POLÍTICA DE PRIVACIDADE - FITAPP\n\n'
+              '1. INFORMAÇÕES QUE COLETAMOS\n'
+              'Coletamos as seguintes informações:\n'
+              '• Dados de cadastro (nome, email, foto de perfil)\n'
+              '• Dados de atividade física (check-ins, treinos, fotos)\n'
+              '• Dados de localização (quando autorizado)\n'
+              '• Dados de uso do aplicativo (analytics)\n\n'
+              '2. COMO USAMOS SUAS INFORMAÇÕES\n'
+              '• Fornecer e melhorar nossos serviços\n'
+              '• Personalizar sua experiência\n'
+              '• Comunicar atualizações e novidades\n'
+              '• Garantir segurança da plataforma\n'
+              '• Cumprir obrigações legais\n\n'
+              '3. COMPARTILHAMENTO DE DADOS\n'
+              'Não vendemos seus dados pessoais. Compartilhamos apenas:\n'
+              '• Com outros usuários (conforme suas configurações)\n'
+              '• Com prestadores de serviços (Firebase, analytics)\n'
+              '• Quando exigido por lei\n\n'
+              '4. SEGURANÇA\n'
+              '• Utilizamos criptografia para proteger dados\n'
+              '• Acesso restrito a funcionários autorizados\n'
+              '• Monitoramento contínuo de segurança\n'
+              '• Backup regular dos dados\n\n'
+              '5. SEUS DIREITOS\n'
+              'Você pode:\n'
+              '• Acessar seus dados pessoais\n'
+              '• Corrigir informações incorretas\n'
+              '• Solicitar exclusão da conta\n'
+              '• Exportar seus dados\n'
+              '• Revogar consentimentos\n\n'
+              '6. COOKIES E TECNOLOGIAS\n'
+              '• Usamos cookies para melhorar a experiência\n'
+              '• Analytics para entender uso do app\n'
+              '• Você pode desabilitar nas configurações\n\n'
+              '7. RETENÇÃO DE DADOS\n'
+              '• Mantemos dados enquanto conta estiver ativa\n'
+              '• Dados podem ser mantidos para fins legais\n'
+              '• Exclusão permanente mediante solicitação\n\n'
+              '8. ALTERAÇÕES\n'
+              'Esta política pode ser atualizada. Notificaremos sobre mudanças significativas.\n\n'
+              'Última atualização: Janeiro 2024\n'
+              'Contato: privacidade@fitapp.com',
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: const Text('Fechar'),
             ),
           ],
         );

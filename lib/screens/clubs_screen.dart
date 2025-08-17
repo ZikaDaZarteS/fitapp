@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'subscription_screen.dart';
 
 class ClubsScreen extends StatefulWidget {
   const ClubsScreen({super.key});
@@ -8,7 +10,21 @@ class ClubsScreen extends StatefulWidget {
 }
 
 class _ClubsScreenState extends State<ClubsScreen> {
+  bool _hasProAccess = false;
   List<Map<String, dynamic>> activeChallenges = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkProStatus();
+  }
+
+  Future<void> _checkProStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _hasProAccess = prefs.getBool('fitapp_pro_active') ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -878,29 +894,169 @@ class _ClubsScreenState extends State<ClubsScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Você precisa do FitApp Pro para entrar no $clubName!'),
-                    backgroundColor: color,
-                    action: SnackBarAction(
-                      label: 'UPGRADE',
-                      textColor: Colors.white,
-                      onPressed: () {
-                        // Navegar para tela de assinatura
-                      },
+                if (_hasProAccess) {
+                  // Usuário tem acesso Pro - mostrar conteúdo do clube
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('🎉 Bem-vindo ao $clubName! Aproveite os benefícios exclusivos!'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 3),
                     ),
-                  ),
-                );
+                  );
+                  // Aqui seria implementada a navegação para o conteúdo do clube
+                  _showClubContent(clubName, color);
+                } else {
+                  // Usuário não tem acesso Pro - mostrar upgrade
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Você precisa do FitApp Pro para entrar no $clubName!'),
+                      backgroundColor: color,
+                      action: SnackBarAction(
+                        label: 'UPGRADE',
+                        textColor: Colors.white,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SubscriptionScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: color,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Entrar no Clube'),
+              child: Text(_hasProAccess ? 'Entrar no Clube' : 'Upgrade para Pro'),
             ),
           ],
         );
       },
+    );
+  }
+
+  void _showClubContent(String clubName, Color color) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.star, color: color, size: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '$clubName - Área Exclusiva',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.05)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: color.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🎉 Parabéns! Você agora tem acesso aos benefícios exclusivos:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildBenefitItem('🏋️ Treinos exclusivos de elite', color),
+                      _buildBenefitItem('👨‍🏫 Coaching personalizado', color),
+                      _buildBenefitItem('🏆 Ranking global premium', color),
+                      _buildBenefitItem('🎁 Recompensas exclusivas', color),
+                      _buildBenefitItem('💬 Comunidade VIP', color),
+                      _buildBenefitItem('📊 Análises avançadas', color),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Status: FitApp Pro Ativo',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Começar Treino'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBenefitItem(String benefit, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(Icons.check, color: color, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              benefit,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

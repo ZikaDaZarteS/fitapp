@@ -1,0 +1,61 @@
+# Query: trip
+# ContextLines: 1
+
+16 results - 5 files
+
+assets\models\meu_modelo.glb:
+       2  # www.blender.org
+       3: mtllib meu_.mtl
+       4: o tripo_node_025b885d-496d-4577-9044-a80247a23d26
+       5  v -0.365417 -0.128906 -0.342224
+
+  506682  s 1
+  506683: usemtl tripo_mat_025b885d-496d-4577-9044-a80247a23d26
+  506684  f 41429/1/1 43194/2/2 41435/3/3
+
+assets\models\optimize_uv.py:
+  25          for line_num, line in enumerate(f, 1):
+  26:             line = line.strip()
+  27              
+
+ios\Runner.xcodeproj\project.pbxproj:
+  335  				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+  336: 				COPY_PHASE_STRIP = NO;
+  337  				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+
+  455  				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+  456: 				COPY_PHASE_STRIP = NO;
+  457  				DEBUG_INFORMATION_FORMAT = dwarf;
+
+  512  				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+  513: 				COPY_PHASE_STRIP = NO;
+  514  				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+
+linux\runner\my_application.cc:
+  67    MyApplication* self = MY_APPLICATION(application);
+  68:   // Strip out the first argument as it is the binary name.
+  69    self->dart_entrypoint_arguments = g_strdupv(*arguments + 1);
+
+macos\Runner.xcodeproj\project.pbxproj:
+  320  			inputPaths = (
+  321: 				Flutter/ephemeral/tripwire,
+  322  			);
+
+  329  			shellPath = /bin/sh;
+  330: 			shellScript = "\"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh && touch Flutter/ephemeral/tripwire";
+  331  		};
+
+  450  				CODE_SIGN_IDENTITY = "-";
+  451: 				COPY_PHASE_STRIP = NO;
+  452: 				DEAD_CODE_STRIPPING = YES;
+  453  				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+
+  526  				CODE_SIGN_IDENTITY = "-";
+  527: 				COPY_PHASE_STRIP = NO;
+  528: 				DEAD_CODE_STRIPPING = YES;
+  529  				DEBUG_INFORMATION_FORMAT = dwarf;
+
+  582  				CODE_SIGN_IDENTITY = "-";
+  583: 				COPY_PHASE_STRIP = NO;
+  584: 				DEAD_CODE_STRIPPING = YES;
+  585  				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

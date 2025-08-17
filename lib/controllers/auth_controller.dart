@@ -279,4 +279,33 @@ class AuthController {
       }
     }
   }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      debugPrint('🔄 Enviando email de recuperação para: $email');
+      await fb_auth.FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+      debugPrint('✅ Email de recuperação enviado com sucesso');
+    } on fb_auth.FirebaseAuthException catch (e) {
+      debugPrint('❌ Erro Firebase Auth: ${e.code} - ${e.message}');
+      
+      String errorMessage = 'Erro ao enviar email de recuperação';
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Email não encontrado';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Email inválido';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
+          break;
+        default:
+          errorMessage = 'Erro: ${e.message}';
+      }
+      throw errorMessage;
+    } catch (e) {
+      debugPrint('❌ Erro inesperado: $e');
+      throw 'Erro inesperado: $e';
+    }
+  }
 }

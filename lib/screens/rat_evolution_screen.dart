@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/rat_evolution.dart';
+import '../widgets/model_3d_viewer.dart';
+import '../widgets/rat_3d.dart';
 import 'rat_showcase_screen.dart';
 
 class RatEvolutionScreen extends StatefulWidget {
@@ -205,26 +207,12 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(90),
-                      child: Image.asset(
-                        _currentEvolution.imagePath,
-                        width: 180,
-                        height: 180,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 180,
-                            height: 180,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(90),
-                            ),
-                            child: const Icon(
-                              Icons.error,
-                              color: Colors.grey,
-                              size: 50,
-                            ),
-                          );
-                        },
+                      child: Model3DViewer(
+                        evolution: _currentEvolution,
+                        size: 180,
+                        enableRotation: true,
+                        enableZoom: false,
+                        autoRotate: true,
                       ),
                     ),
                   ),
@@ -527,15 +515,21 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(30),
-                        child: Image.asset(
-                          evolution.imagePath,
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 60,
-                              height: 60,
+                        child: evolution.modelPath != null
+                            ? const SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: Rat3DWidget()
+                              )
+                            : Image.asset(
+                                evolution.imagePath,
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 60,
+                                    height: 60,
                               decoration: BoxDecoration(
                                 color: Colors.grey.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(30),

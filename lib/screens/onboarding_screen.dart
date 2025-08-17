@@ -45,12 +45,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, '/perfil');
+      Navigator.pushReplacementNamed(context, '/main');
     }
   }
 
   void _skip() {
-    Navigator.pushReplacementNamed(context, '/perfil');
+    Navigator.pushReplacementNamed(context, '/main');
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/rat_evolution.dart';
+import '../widgets/model_3d_viewer.dart';
 
 class RatShowcaseScreen extends StatefulWidget {
   final RatEvolution evolution;
@@ -133,36 +134,16 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Imagem do Rato na Evolução
-          Container(
+          // Model 3D sem o círculo branco
+          SizedBox(
             width: _ratSize,
             height: _ratSize,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(_ratSize / 2),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(_ratSize / 2),
-              child: Image.asset(
-                widget.evolution.imagePath,
-                width: _ratSize,
-                height: _ratSize,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: _ratSize,
-                    height: _ratSize,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(_ratSize / 2),
-                    ),
-                    child: const Icon(
-                      Icons.error,
-                      color: Colors.grey,
-                      size: 50,
-                    ),
-                  );
-                },
-              ),
+            child: Model3DViewer(
+              evolution: widget.evolution,
+              size: _ratSize,
+              enableRotation: true,
+              enableZoom: true,
+              autoRotate: _isAnimating,
             ),
           ),
 

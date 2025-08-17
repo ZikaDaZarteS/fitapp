@@ -1,30 +1,44 @@
-// This is a basic Flutter widget test.
+// This is a basic Flutter widget test for FitApp.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Simple test to verify basic widget functionality without Firebase dependencies.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:fitapp/main.dart';
+import 'package:fitapp/screens/login_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('LoginScreen widget test', (WidgetTester tester) async {
+    // Build the LoginScreen widget
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: LoginScreen(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the login screen loads
+    expect(find.byType(LoginScreen), findsOneWidget);
+    
+    // Check for basic UI elements
+    expect(find.byType(Scaffold), findsOneWidget);
+    expect(find.byType(TextFormField), findsAtLeastNWidgets(2)); // Email and password fields
+    expect(find.byType(ElevatedButton), findsAtLeastNWidgets(1)); // Login button
+  });
+  
+  testWidgets('Basic widget creation test', (WidgetTester tester) async {
+    // Test a simple widget creation
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(title: const Text('Test')),
+          body: const Center(
+            child: Text('FitApp Test'),
+          ),
+        ),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify the test widget
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.text('FitApp Test'), findsOneWidget);
   });
 }

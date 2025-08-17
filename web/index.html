@@ -22,6 +22,11 @@
   <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
+  <!-- Model Viewer for 3D models (via CDN oficial) -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
   <!-- Firebase SDKs para Flutter Web - Versão compatível -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js';
@@ -44,8 +49,27 @@
     window.firebaseFirestore = getFirestore(app);
   </script>
 
+  <!-- Forçar transparência no fundo do model-viewer -->
+  <style>
+    model-viewer {
+      background-color: transparent !important;
+    }
+    model-viewer::part(default-progress-bar) {
+      display: none; /* oculta a barra de progresso */
+    }
+  </style>
 </head>
 <body>
+  <!-- Teste do modelo GLB direto no HTML -->
+  <model-viewer src="assets/models/meu_modelo.glb"
+                alt="Meu modelo 3D"
+                auto-rotate
+                camera-controls
+                ar
+                style="width: 100%; height: 600px;">
+  </model-viewer>
+
+  <!-- Bootstrap do Flutter -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
