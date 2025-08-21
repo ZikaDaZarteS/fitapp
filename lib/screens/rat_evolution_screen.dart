@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/rat_evolution.dart';
-import '../widgets/model_3d_viewer.dart';
+import '../widgets/enhanced_3d_viewer.dart';
 import '../widgets/rat_3d.dart';
 import 'rat_showcase_screen.dart';
 
@@ -179,39 +179,44 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
               ),
               width: 2 + (_glowAnimation.value * 3),
             ),
-            boxShadow: _isEvolving
-                ? [
-                    BoxShadow(
-                      color: _currentEvolution.color.withValues(
-                        alpha: 0.3 + (_glowAnimation.value * 0.7),
+            boxShadow:
+                _isEvolving
+                    ? [
+                      BoxShadow(
+                        color: _currentEvolution.color.withValues(
+                          alpha: 0.3 + (_glowAnimation.value * 0.7),
+                        ),
+                        spreadRadius: 5 + (_glowAnimation.value * 10),
+                        blurRadius: 20 + (_glowAnimation.value * 30),
+                        offset: const Offset(0, 0),
                       ),
-                      spreadRadius: 5 + (_glowAnimation.value * 10),
-                      blurRadius: 20 + (_glowAnimation.value * 30),
-                      offset: const Offset(0, 0),
-                    ),
-                  ]
-                : null,
+                    ]
+                    : null,
           ),
           child: Column(
             children: [
-              // Imagem do Rato na Evolução
+              // Modelo 3D do Rato na Evolução - Expandido
               Transform.scale(
                 scale: _scaleAnimation.value,
                 child: Transform.rotate(
                   angle: _rotationAnimation.value * 0.1,
                   child: Container(
-                    width: 180,
-                    height: 180,
+                    width: 250, // Aumentado de 180 para 250
+                    height: 250, // Aumentado de 180 para 250
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(90),
+                      borderRadius: BorderRadius.circular(
+                        125,
+                      ), // Ajustado para o novo tamanho
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(90),
-                      child: Model3DViewer(
+                      borderRadius: BorderRadius.circular(
+                        125,
+                      ), // Ajustado para o novo tamanho
+                      child: Enhanced3DViewer(
                         evolution: _currentEvolution,
-                        size: 180,
+                        size: 250, // Aumentado para 250
                         enableRotation: true,
-                        enableZoom: false,
+                        enableZoom: true, // Habilitado zoom
                         autoRotate: true,
                       ),
                     ),
@@ -282,8 +287,9 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          RatShowcaseScreen(evolution: _currentEvolution),
+                      builder:
+                          (context) =>
+                              RatShowcaseScreen(evolution: _currentEvolution),
                     ),
                   );
                 },
@@ -353,11 +359,7 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        Icon(Icons.auto_awesome, color: Colors.white, size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Animar Evolução',
@@ -502,46 +504,51 @@ class _RatEvolutionScreenState extends State<RatEvolutionScreen>
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: isCompleted
-                            ? evolution.color.withValues(alpha: 0.2)
-                            : Colors.grey.withValues(alpha: 0.1),
+                        color:
+                            isCompleted
+                                ? evolution.color.withValues(alpha: 0.2)
+                                : Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
-                          color: isCurrent
-                              ? evolution.color
-                              : Colors.grey.withValues(alpha: 0.3),
+                          color:
+                              isCurrent
+                                  ? evolution.color
+                                  : Colors.grey.withValues(alpha: 0.3),
                           width: isCurrent ? 3 : 1,
                         ),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(30),
-                        child: evolution.modelPath != null
-                            ? const SizedBox(
-                                width: 60,
-                                height: 60,
-                                child: Rat3DWidget()
-                              )
-                            : Image.asset(
-                                evolution.imagePath,
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 60,
-                                    height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: const Icon(
-                                Icons.error,
-                                color: Colors.grey,
-                                size: 20,
-                              ),
-                            );
-                          },
-                        ),
+                        child:
+                            evolution.modelPath != null
+                                ? const SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: Rat3DWidget(),
+                                )
+                                : Image.asset(
+                                  evolution.imagePath,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: const Icon(
+                                        Icons.error,
+                                        color: Colors.grey,
+                                        size: 20,
+                                      ),
+                                    );
+                                  },
+                                ),
                       ),
                     ),
                     const SizedBox(height: 8),

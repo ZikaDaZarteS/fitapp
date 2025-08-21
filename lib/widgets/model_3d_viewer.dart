@@ -48,12 +48,12 @@ class _Model3DViewerState extends State<Model3DViewer> {
       height: widget.size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.grey[100],
+        color: Colors.transparent, // Fundo transparente
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: ModelViewer(
-          backgroundColor: const Color.fromARGB(0xFF, 0xEE, 0xEE, 0xEE),
+          backgroundColor: Colors.transparent, // Fundo do modelo transparente
           src: widget.evolution.modelPath!,
           alt: widget.evolution.description,
           ar: widget.enableRotation,
@@ -67,6 +67,14 @@ class _Model3DViewerState extends State<Model3DViewer> {
           autoPlay: true,
           loading: Loading.eager,
           interactionPrompt: InteractionPrompt.none,
+          // Configurações para melhor visualização e zoom
+          minFieldOfView: '10deg', // Zoom máximo
+          maxFieldOfView: '45deg', // Zoom mínimo
+          fieldOfView: '30deg', // Campo de visão inicial
+          // Permite zoom mais amplo
+          cameraTarget: '0m 0m 0m',
+          // Melhora a interação de zoom
+          touchAction: TouchAction.panY,
         ),
       ),
     );
@@ -158,44 +166,49 @@ class _Enhanced3DViewerState extends State<Enhanced3DViewer>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: GestureDetector(
-          onPanStart: widget.enableRotation
-              ? (details) {
-                  _isDragging = true;
-                  if (widget.autoRotate) {
-                    _rotationController.stop();
+          onPanStart:
+              widget.enableRotation
+                  ? (details) {
+                    _isDragging = true;
+                    if (widget.autoRotate) {
+                      _rotationController.stop();
+                    }
                   }
-                }
-              : null,
-          onPanUpdate: widget.enableRotation
-              ? (details) {
-                  setState(() {
-                    _userRotation += details.delta.dx * 0.01;
-                  });
-                }
-              : null,
-          onPanEnd: widget.enableRotation
-              ? (details) {
-                  _isDragging = false;
-                  if (widget.autoRotate) {
-                    _rotationController.repeat();
+                  : null,
+          onPanUpdate:
+              widget.enableRotation
+                  ? (details) {
+                    setState(() {
+                      _userRotation += details.delta.dx * 0.01;
+                    });
                   }
-                }
-              : null,
+                  : null,
+          onPanEnd:
+              widget.enableRotation
+                  ? (details) {
+                    _isDragging = false;
+                    if (widget.autoRotate) {
+                      _rotationController.repeat();
+                    }
+                  }
+                  : null,
           child: AnimatedBuilder(
             animation: Listenable.merge([_rotationAnimation, _scaleAnimation]),
             builder: (context, child) {
-              double rotation = _isDragging
-                  ? _userRotation
-                  : (widget.autoRotate
-                        ? _rotationAnimation.value + _userRotation
-                        : _userRotation);
+              double rotation =
+                  _isDragging
+                      ? _userRotation
+                      : (widget.autoRotate
+                          ? _rotationAnimation.value + _userRotation
+                          : _userRotation);
 
               return Transform(
                 alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..rotateY(rotation)
-                  ..scale(_scaleAnimation.value),
+                transform:
+                    Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateY(rotation)
+                      ..scale(_scaleAnimation.value),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -290,10 +303,11 @@ class _Fallback3DViewerState extends State<Fallback3DViewer>
         builder: (context, child) {
           return Transform(
             alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateY(_rotationAnimation.value)
-              ..rotateX(0.2),
+            transform:
+                Matrix4.identity()
+                  ..setEntry(3, 2, 0.001)
+                  ..rotateY(_rotationAnimation.value)
+                  ..rotateX(0.2),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),

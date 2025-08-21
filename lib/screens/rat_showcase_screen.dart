@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/rat_evolution.dart';
-import '../widgets/model_3d_viewer.dart';
+import '../widgets/enhanced_3d_viewer.dart';
 
 class RatShowcaseScreen extends StatefulWidget {
   final RatEvolution evolution;
@@ -16,7 +16,6 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
   late AnimationController _backgroundController;
   late Animation<double> _backgroundAnimation;
   bool _isAnimating = true;
-  double _ratSize = 300;
 
   @override
   void initState() {
@@ -63,13 +62,8 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
             child: SafeArea(
               child: Column(
                 children: [
-                  // Header
                   _buildHeader(),
-
-                  // Área principal do rato
                   Expanded(child: _buildRatArea()),
-
-                  // Controles
                   _buildControls(),
                 ],
               ),
@@ -130,55 +124,88 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
   }
 
   Widget _buildRatArea() {
-    return Center(
+    return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Model 3D sem o círculo branco
-          SizedBox(
-            width: _ratSize,
-            height: _ratSize,
-            child: Model3DViewer(
-              evolution: widget.evolution,
-              size: _ratSize,
-              enableRotation: true,
-              enableZoom: true,
-              autoRotate: _isAnimating,
-            ),
-          ),
-
-          const SizedBox(height: 40),
-
-          // Informações do estágio
-          Container(
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: widget.evolution.color.withValues(alpha: 0.3),
-                width: 2,
+          Expanded(
+            flex: 3,
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: Stack(
+                children: [
+                  Enhanced3DViewer(
+                    evolution: widget.evolution,
+                    size: MediaQuery.of(context).size.width - 40,
+                    enableRotation: true,
+                    enableZoom: true,
+                    autoRotate: _isAnimating,
+                  ),
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: FloatingActionButton(
+                      mini: true,
+                      backgroundColor: widget.evolution.color.withValues(
+                        alpha: 0.8,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => FullScreen3DViewer(
+                                  evolution: widget.evolution,
+                                ),
+                          ),
+                        );
+                      },
+                      child: const Icon(
+                        Icons.fullscreen,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Column(
-              children: [
-                Text(
-                  'Características do ${widget.evolution.name}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildCharacteristic('Força', _getStrengthLevel()),
-                _buildCharacteristic('Resistência', _getResistanceLevel()),
-                _buildCharacteristic('Velocidade', _getSpeedLevel()),
-                _buildCharacteristic('Inteligência', _getIntelligenceLevel()),
-              ],
+          ),
+          const SizedBox(height: 20),
+          _buildInfoBox(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoBox() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: widget.evolution.color.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Características do ${widget.evolution.name}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 16),
+          _buildCharacteristic('Força', _getStrengthLevel()),
+          _buildCharacteristic('Resistência', _getResistanceLevel()),
+          _buildCharacteristic('Velocidade', _getSpeedLevel()),
+          _buildCharacteristic('Inteligência', _getIntelligenceLevel()),
         ],
       ),
     );
@@ -306,86 +333,47 @@ class _RatShowcaseScreenState extends State<RatShowcaseScreen>
   }
 
   Widget _buildControls() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
+    return const SizedBox.shrink(); // Remove completamente os controles
+  }
+}
+
+// Novo widget para fullscreen
+class FullScreen3DViewer extends StatelessWidget {
+  final RatEvolution evolution;
+
+  const FullScreen3DViewer({super.key, required this.evolution});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
         children: [
-          // Controle de tamanho
-          Row(
-            children: [
-              const Text(
-                'Tamanho:',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Slider(
-                  value: _ratSize,
-                  min: 150,
-                  max: 400,
-                  divisions: 10,
-                  activeColor: widget.evolution.color,
-                  inactiveColor: Colors.grey.withValues(alpha: 0.3),
-                  onChanged: (value) {
-                    setState(() {
-                      _ratSize = value;
-                    });
-                  },
-                ),
-              ),
-            ],
+          SizedBox(
+            width: screenSize.width,
+            height: screenSize.height,
+            child: Enhanced3DViewer(
+              evolution: evolution,
+              size:
+                  screenSize.width > screenSize.height
+                      ? screenSize.width
+                      : screenSize.height,
+              enableRotation: true,
+              enableZoom: true,
+              autoRotate: true,
+            ),
           ),
-
-          const SizedBox(height: 20),
-
-          // Botões de ação
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildActionButton('Girar', Icons.rotate_right, () {
-                // Ação de girar
-              }),
-              _buildActionButton('Pular', Icons.keyboard_arrow_up, () {
-                // Ação de pular
-              }),
-              _buildActionButton('Especial', Icons.star, () {
-                // Ação especial
-              }),
-            ],
+          Positioned(
+            top: 40,
+            right: 20,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close, color: Colors.white, size: 30),
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-    String label,
-    IconData icon,
-    VoidCallback onPressed,
-  ) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: widget.evolution.color.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: widget.evolution.color, width: 2),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: widget.evolution.color, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: widget.evolution.color,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
